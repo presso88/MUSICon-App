@@ -5,8 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
 <meta name="theme-color" content="#08080a" />
 <title>MUSICon</title>
- <link rel="icon" type="image/png" href="favicon.png?v=2">
-
+<link rel="icon" type="image/png" href="favicon.png?v=3">
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -44,19 +43,20 @@
     content: "";
     position: fixed;
     border-radius: 50%;
-    filter: blur(95px);
+    filter: blur(100px);
     pointer-events: none;
     z-index: 0;
+    opacity: .35;
   }
   body::before {
-    width: 440px; height: 440px;
-    top: -190px; left: -90px;
-    background: rgba(192, 38, 45, .26);
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, var(--accent-1), transparent 70%);
+    top: -100px; right: -80px;
   }
   body::after {
-    width: 380px; height: 380px;
-    top: -130px; right: -130px;
-    background: rgba(128, 24, 29, .20);
+    width: 280px; height: 280px;
+    background: radial-gradient(circle, #5b1317, transparent 70%);
+    top: 400px; left: -100px;
   }
 
   .app {
@@ -64,7 +64,7 @@
     z-index: 1;
     max-width: 480px;
     margin: 0 auto;
-    padding: 8px 16px calc(40px + env(safe-area-inset-bottom));
+    padding: 0 16px calc(24px + env(safe-area-inset-bottom));
   }
 
   .app-header {
@@ -77,353 +77,396 @@
   .logo-badge {
     width: 32px;
     height: 32px;
+    border-radius: 6px;
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-  }
-  .logo-svg {
-    width: 32px;
-    height: 32px;
-    display: block;
-    border-radius: 6px;
     box-shadow: 0 4px 14px rgba(192,38,45,.4);
+    background: #121217;
   }
-  .logo {
-    font-size: 26px;
-    font-weight: 800;
-    letter-spacing: -.03em;
-    line-height: 1;
-    color: #f5f5f7;
-  }
-  .logo span {
-    background: linear-gradient(135deg, #ef4444, #b91c1c);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-  .version {
-    font-size: 10px;
-    font-weight: 600;
-    color: #5c5c69;
-    letter-spacing: .04em;
-    padding: 3px 7px;
-    background: rgba(255,255,255,.05);
-    border-radius: 100px;
-  }
-
-  /* ---------- ОБЛОЖКИ ---------- */
-  .cover-wrap {
-    position: relative;
-    overflow: hidden;
-    display: block;
-    background-color: #1a1a22;
-    flex: 0 0 auto;
-  }
-  .cover-wrap.big {
-    width: 88px;
-    height: 88px;
-    border-radius: 18px;
-    box-shadow: 0 14px 28px -12px rgba(0,0,0,.85);
-  }
-  .cover-wrap.small {
-    width: 44px;
-    height: 44px;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px -6px rgba(0,0,0,.9);
-  }
-  .cover-wrap .cover-initial {
-    position: absolute;
-    inset: 0;
-    display: grid;
-    place-items: center;
-    font-weight: 800;
-    color: rgba(255,255,255,.92);
-    text-shadow: 0 2px 12px rgba(0,0,0,.35);
-    letter-spacing: -.03em;
-    z-index: 1;
-  }
-  .cover-wrap.big .cover-initial { font-size: 34px; }
-  .cover-wrap.small .cover-initial { font-size: 17px; }
-
-  .cover-wrap img {
-    position: absolute;
-    inset: 0;
+  .logo-badge img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    z-index: 2;
     display: block;
   }
-
-  /* ---------- КАРТОЧКА РЕЛИЗА ---------- */
-  .release-card {
-    position: relative;
-    overflow: hidden;
-    padding: 16px;
-    border-radius: 26px;
-    background: linear-gradient(160deg, #181820 0%, #0d0d12 65%);
-    border: 1px solid var(--stroke);
-    box-shadow: 0 22px 45px -22px rgba(0,0,0,.95), inset 0 1px 0 rgba(255,255,255,.06);
+  .logo {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -.03em;
+    color: #ffffff;
   }
-  .release-card::after {
+  .logo span {
+    color: #ef4444;
+  }
+  .version {
+    font-size: 11px;
+    font-weight: 600;
+    color: #fca5a5;
+    background: rgba(192,38,45,.2);
+    border: 1px solid rgba(192,38,45,.35);
+    padding: 2px 7px;
+    border-radius: 20px;
+    letter-spacing: .02em;
+  }
+
+  .latest-card {
+    position: relative;
+    background: linear-gradient(165deg, rgba(27,27,34,.92) 0%, rgba(18,18,23,.96) 100%);
+    border: 1px solid var(--stroke);
+    border-radius: 22px;
+    padding: 18px;
+    box-shadow:
+      0 20px 40px -15px rgba(0,0,0,.7),
+      0 0 0 1px rgba(255,255,255,.04);
+    overflow: hidden;
+  }
+  .latest-card::before {
     content: "";
     position: absolute;
-    top: -90px; right: -70px;
-    width: 210px; height: 210px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(192,38,45,.35), transparent 70%);
+    inset: 0;
+    background: radial-gradient(circle at 85% 15%, var(--accent-glow), transparent 60%);
     pointer-events: none;
+    opacity: .4;
   }
-  .release-top {
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    z-index: 1;
-  }
-  .release-meta { min-width: 0; }
-  .pill {
-    display: inline-block;
-    margin-bottom: 8px;
-    padding: 5px 10px;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: .09em;
-    text-transform: uppercase;
-    color: #fca5a5;
-    background: rgba(192,38,45,.15);
-    border: 1px solid rgba(192,38,45,.3);
-    border-radius: 100px;
-  }
-  .release-title {
-    font-size: 19px;
-    font-weight: 700;
-    letter-spacing: -.025em;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .release-artist {
-    margin-top: 3px;
-    font-size: 13px;
-    color: var(--muted);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .artist-link {
-    cursor: pointer;
-    color: var(--muted);
-    transition: color .15s ease, text-decoration .15s ease;
-  }
-  .artist-link:hover, .artist-link:active {
-    color: #ffffff;
-    text-decoration: underline;
-    text-underline-offset: 2px;
-  }
-  .artist-sep {
-    color: #5c5c69;
-    user-select: none;
-  }
-  .release-system {
-    margin-top: 4px;
-    font-size: 11px;
-    color: #6b6b78;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .rating-row {
-    position: relative;
-    z-index: 1;
-    margin-top: 18px;
-    display: flex;
-    align-items: flex-end;
-    gap: 14px;
-  }
-  .score {
-    font-size: 34px;
-    font-weight: 800;
-    letter-spacing: -.045em;
-    line-height: .95;
-    font-variant-numeric: tabular-nums;
-    background: linear-gradient(135deg, #ffffff, #fca5a5);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    white-space: nowrap;
-  }
-  .bar {
-    flex: 1;
-    height: 8px;
-    margin-bottom: 7px;
-    border-radius: 100px;
-    background: rgba(255,255,255,.08);
-    overflow: hidden;
-  }
-  .bar i {
-    display: block;
-    height: 100%;
-    width: 0;
-    border-radius: inherit;
-    background: linear-gradient(90deg, #c0262d, #ef4444);
-    box-shadow: 0 0 16px rgba(220,38,38,.6);
-    transition: width 1.1s cubic-bezier(.22,1,.36,1);
-  }
-
-  .block { margin-top: 22px; }
-  .block-title {
+  .latest-top {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 4px 12px;
+    margin-bottom: 14px;
+    position: relative;
+    z-index: 1;
+  }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: #fda4af;
+    background: rgba(192,38,45,.22);
+    border: 1px solid rgba(192,38,45,.4);
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+  .pill::before {
+    content: "";
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #ff4d58;
+    box-shadow: 0 0 8px #ff4d58;
+    animation: pulseDot 2s infinite;
+  }
+  @keyframes pulseDot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: .4; transform: scale(.8); }
+  }
+  .latest-date {
+    font-size: 11.5px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .latest-body {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
+  .latest-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .latest-title {
     font-size: 17px;
     font-weight: 700;
     letter-spacing: -.02em;
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
-  .block-title .hint {
-    font-size: 12px;
-    font-weight: 500;
+  .latest-artist {
+    font-size: 13px;
     color: var(--muted);
+    margin-top: 4px;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .latest-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #d4d4d8;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.07);
+    padding: 3px 8px;
+    border-radius: 6px;
+  }
+  .latest-score-box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    flex-shrink: 0;
+    padding-left: 10px;
+  }
+  .latest-score-box .score {
+    font-size: 38px;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -.04em;
+    font-variant-numeric: tabular-nums;
+    background: linear-gradient(135deg, #ffffff 40%, #fca5a5 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 10px rgba(192,38,45,.4));
+  }
+  .latest-score-box .score-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .artist-link {
+    display: inline-block;
+    cursor: pointer;
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: rgba(255,255,255,.2);
+    transition: color .15s ease, text-decoration-color .15s ease;
+  }
+  .artist-link:hover, .artist-link:active {
+    color: #ff6b72;
+    text-decoration-color: #ff6b72;
+  }
+  .artist-sep {
+    color: var(--muted);
+  }
+
+  .cover {
+    position: relative;
+    flex-shrink: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--surface-2);
+    border: 1px solid rgba(255,255,255,.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 20px -6px rgba(0,0,0,.6);
+  }
+  .cover.large { width: 76px; height: 76px; border-radius: 14px; }
+  .cover.small { width: 44px; height: 44px; border-radius: 10px; }
+  .cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .cover-initial {
+    font-weight: 800;
+    color: rgba(255,255,255,.7);
+    user-select: none;
+  }
+  .cover.large .cover-initial { font-size: 26px; }
+  .cover.small .cover-initial { font-size: 16px; }
+
+  .block {
+    margin-top: 24px;
+  }
+  .block-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    padding: 0 4px;
+  }
+  .block-title {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: -.01em;
+    color: #e4e4e7;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .block-count {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--stroke);
+    padding: 2px 7px;
+    border-radius: 12px;
   }
 
   .accordion-btn {
     width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--stroke);
+    border-radius: 16px;
+    padding: 14px 16px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    padding: 16px 18px;
-    font: inherit;
-    font-size: 15px;
-    font-weight: 600;
     color: var(--text);
-    background: var(--surface);
-    border: 1px solid var(--stroke);
-    border-radius: 18px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
     cursor: pointer;
-    box-shadow: 0 14px 30px -20px rgba(0,0,0,.95);
-    transition: background .2s ease;
+    transition: background .15s ease, border-color .15s ease;
   }
-  .accordion-btn:active { background: var(--surface-2); }
-  .accordion-btn .label { display: flex; align-items: center; }
-  .count {
-    margin-left: 9px;
-    padding: 3px 9px;
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--muted);
-    background: rgba(255,255,255,.07);
-    border-radius: 100px;
+  .accordion-btn:hover { background: #17171e; }
+  .accordion-btn:active { transform: scale(.995); }
+  .accordion-btn .chevron {
+    width: 18px;
+    height: 18px;
+    transition: transform .25s ease;
+    opacity: .6;
   }
-  .chevron {
-    flex: 0 0 auto;
-    color: var(--muted);
-    transition: transform .38s cubic-bezier(.4,0,.2,1);
+  .accordion-btn[aria-expanded="true"] .chevron {
+    transform: rotate(180deg);
   }
-  .accordion-btn.open .chevron { transform: rotate(180deg); }
-  .accordion-panel {
-    display: grid;
-    grid-template-rows: 0fr;
-    transition: grid-template-rows .38s cubic-bezier(.4,0,.2,1);
+  .accordion-content {
+    display: none;
+    margin-top: 10px;
   }
-  .accordion-panel.open { grid-template-rows: 1fr; }
-  .accordion-inner { overflow: hidden; min-height: 0; }
+  .accordion-content.open { display: block; }
 
   .release-list {
     list-style: none;
-    margin-top: 10px;
-    background: var(--surface);
-    border: 1px solid var(--stroke);
-    border-radius: 18px;
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   }
   .release-item {
+    background: var(--surface);
+    border: 1px solid var(--stroke);
+    border-radius: 14px;
+    padding: 10px 12px;
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px 14px;
-    border-bottom: 1px solid rgba(255,255,255,.05);
+    transition: background .15s ease;
   }
-  .release-item:last-child { border-bottom: none; }
-  .item-info { flex: 1; min-width: 0; }
+  .release-item:hover { background: #17171e; }
+  .item-info {
+    flex: 1;
+    min-width: 0;
+  }
   .item-title {
-    font-size: 14px;
+    font-size: 13.5px;
     font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
   .item-artist {
-    margin-top: 2px;
     font-size: 12px;
     color: var(--muted);
+    margin-top: 2px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
   .item-score {
     flex: 0 0 auto;
-    font-size: 14px;
-    font-weight: 700;
+    font-size: 15px;
+    font-weight: 800;
     font-variant-numeric: tabular-nums;
-    color: #fca5a5;
+    letter-spacing: -.02em;
+    background: linear-gradient(135deg, #ffffff, #fca5a5);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
   .artists-card {
-    padding: 6px;
     background: var(--surface);
     border: 1px solid var(--stroke);
-    border-radius: 22px;
-    box-shadow: 0 24px 45px -26px rgba(0,0,0,.95);
+    border-radius: 18px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
   }
   .artist-row {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 9px 10px;
-    border-radius: 16px;
+    padding: 10px 12px;
+    border-radius: 12px;
     cursor: pointer;
+    transition: background .15s ease, transform .15s ease;
+    user-select: none;
   }
-  .artist-row:active { background: rgba(255,255,255,.045); }
-  .rank {
-    flex: 0 0 auto;
-    width: 18px;
-    text-align: center;
+  .artist-row:hover { background: #1a1a22; }
+  .artist-row:active { transform: scale(.99); }
+
+  .artist-row .rank {
+    width: 22px;
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 800;
     font-variant-numeric: tabular-nums;
-    color: #565662;
+    text-align: center;
   }
-  .artist-row.top .rank { color: #f59e0b; }
+  .artist-row.rank-1 .rank { color: #FFD700; text-shadow: 0 0 10px rgba(255,215,0,.45); }
+  .artist-row.rank-2 .rank { color: #C0C0C0; text-shadow: 0 0 8px rgba(192,192,192,.35); }
+  .artist-row.rank-3 .rank { color: #CD7F32; text-shadow: 0 0 8px rgba(205,127,50,.35); }
+  .artist-row.rank-4 .rank, .artist-row.rank-5 .rank { color: #565662; }
+
   .avatar {
-    flex: 0 0 auto;
-    width: 42px; height: 42px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     overflow: hidden;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.1);
     position: relative;
-    display: grid;
-    place-items: center;
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,.14);
-    font-size: 16px;
-    font-weight: 800;
-    color: #fff;
   }
-  .avatar .cover-initial { font-size: 16px; }
   .avatar img {
     position: absolute;
     inset: 0;
-    width: 100%; height: 100%;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    z-index: 2;
   }
-  .artist-row.top .avatar {
+  .artist-row.rank-1 .avatar {
+    box-shadow:
+      inset 0 0 0 1px rgba(255,255,255,.2),
+      0 0 0 2px rgba(255,215,0,.7),
+      0 0 16px rgba(255,215,0,.35);
+  }
+  .artist-row.rank-2 .avatar {
+    box-shadow:
+      inset 0 0 0 1px rgba(255,255,255,.16),
+      0 0 0 2px rgba(192,192,192,.7),
+      0 0 14px rgba(192,192,192,.25);
+  }
+  .artist-row.rank-3 .avatar {
     box-shadow:
       inset 0 0 0 1px rgba(255,255,255,.14),
-      0 0 0 2px rgba(245,158,11,.55),
-      0 0 18px rgba(245,158,11,.3);
+      0 0 0 2px rgba(205,127,50,.65),
+      0 0 14px rgba(205,127,50,.25);
   }
+
   .artist-info { flex: 1; min-width: 0; }
   .artist-name {
     font-size: 14px;
@@ -446,154 +489,186 @@
     background: linear-gradient(135deg, #ffffff, #fca5a5);
     -webkit-background-clip: text;
     background-clip: text;
-    color: transparent;
+    -webkit-text-fill-color: transparent;
   }
-
-  .status {
-    padding: 24px 8px;
-    text-align: center;
-    font-size: 14px;
-    color: var(--muted);
-  }
-  .status.error { color: #fca5a5; }
 
   .artist-view {
     position: fixed;
     inset: 0;
-    z-index: 100;
     background: var(--bg);
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    padding: calc(env(safe-area-inset-top) + 12px) 0 calc(env(safe-area-inset-bottom) + 32px);
-    transform: translateX(100%);
-    transition: transform .38s cubic-bezier(.32,.72,0,1);
-    will-change: transform;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    transform: translateY(100%);
+    transition: transform .32s cubic-bezier(.16, 1, .3, 1);
+    overflow: hidden;
   }
-  .artist-view.open { transform: translateX(0); }
+  .artist-view.open { transform: translateY(0); }
   .artist-view::before {
     content: "";
     position: absolute;
-    top: -160px; left: 50%;
-    transform: translateX(-50%);
-    width: 520px; height: 380px;
+    width: 380px; height: 380px;
     border-radius: 50%;
-    background: var(--artist-glow, rgba(192,38,45,.4));
-    filter: blur(100px);
-    opacity: .55;
+    background: radial-gradient(circle, var(--artist-glow, var(--accent-glow)), transparent 70%);
+    top: -120px; left: 50%;
+    transform: translateX(-50%);
+    filter: blur(80px);
+    opacity: .5;
     pointer-events: none;
   }
-  .artist-view-inner {
+  .artist-view-header {
     position: relative;
-    max-width: 480px;
-    margin: 0 auto;
-    padding: 0 16px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: calc(14px + env(safe-area-inset-top)) 16px 14px;
+    border-bottom: 1px solid var(--stroke);
+    background: rgba(8,8,10,.8);
+    backdrop-filter: blur(16px);
   }
   .back-btn {
+    background: var(--surface);
+    border: 1px solid var(--stroke);
+    color: var(--text);
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 8px 14px 8px 10px;
-    font: inherit;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text);
-    background: rgba(255,255,255,.06);
-    border: 1px solid var(--stroke);
-    border-radius: 100px;
-    cursor: pointer;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
   }
-  .back-btn svg { display: block; }
-
+  .back-btn:active { transform: scale(.97); }
+  .artist-view-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 16px calc(30px + env(safe-area-inset-bottom));
+    position: relative;
+    z-index: 1;
+    max-width: 480px;
+    width: 100%;
+    margin: 0 auto;
+  }
   .artist-hero {
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
-    padding: 26px 12px 22px;
-    animation: rise .5s cubic-bezier(.22,1,.36,1) both;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--stroke);
   }
   .artist-hero .avatar {
-    width: 108px; height: 108px;
-    font-size: 42px;
+    width: 96px;
+    height: 96px;
     box-shadow:
-      0 18px 42px -18px rgba(0,0,0,.9),
-      inset 0 0 0 1px rgba(255,255,255,.16);
+      0 12px 30px -8px rgba(0,0,0,.8),
+      inset 0 0 0 2px rgba(255,255,255,.15);
   }
-  .artist-hero .avatar .cover-initial { font-size: 42px; }
+  .artist-hero .avatar .cover-initial { font-size: 38px; }
   .artist-hero-name {
-    margin-top: 16px;
-    font-size: 26px;
+    font-size: 24px;
     font-weight: 800;
-    letter-spacing: -.035em;
-    line-height: 1.1;
+    letter-spacing: -.03em;
+    margin-top: 14px;
   }
   .artist-hero-stats {
     display: flex;
     gap: 8px;
-    margin-top: 12px;
+    margin-top: 10px;
     flex-wrap: wrap;
     justify-content: center;
   }
   .stat-chip {
-    padding: 6px 12px;
     font-size: 12px;
     font-weight: 600;
-    color: var(--muted);
-    background: rgba(255,255,255,.05);
+    color: #e4e4e7;
+    background: var(--surface);
     border: 1px solid var(--stroke);
-    border-radius: 100px;
+    padding: 5px 12px;
+    border-radius: 20px;
   }
-  .stat-chip strong { color: var(--text); font-weight: 700; }
+  .stat-chip strong {
+    color: #fff;
+    font-weight: 800;
+  }
 
+  .internal-top-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--muted);
+    margin: 20px 4px 10px;
+  }
+  .internal-top {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
   .internal-top-item {
+    background: var(--surface);
+    border: 1px solid var(--stroke);
+    border-radius: 14px;
+    padding: 10px 12px;
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 10px 10px;
-    border-radius: 14px;
   }
-  .internal-top-item .rank { width: 22px; font-size: 14px; color: var(--muted); }
-  .internal-top-item:nth-child(1) .rank { color: #f59e0b; }
-  .internal-top-item:nth-child(2) .rank { color: #d1d5db; }
-  .internal-top-item:nth-child(3) .rank { color: #f97316; }
+  .internal-top-item .rank {
+    width: 20px;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--muted);
+    text-align: center;
+  }
+  .internal-top-item:nth-child(1) .rank { color: #FFD700; }
+  .internal-top-item:nth-child(2) .rank { color: #C0C0C0; }
+  .internal-top-item:nth-child(3) .rank { color: #CD7F32; }
+
+  .status {
+    padding: 36px 16px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .error-block {
+    background: rgba(192,38,45,.12);
+    border: 1px solid rgba(192,38,45,.3);
+    color: #fca5a5;
+    padding: 14px 16px;
+    border-radius: 14px;
+    font-size: 12.5px;
+    line-height: 1.4;
+    text-align: center;
+    margin: 12px 0;
+  }
 
   .debug-panel {
     display: none;
-    position: fixed;
-    left: 8px; right: 8px; bottom: 8px;
-    max-height: 45vh;
+    margin-top: 16px;
+    background: #000;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 10px;
+    font-family: monospace;
+    font-size: 10.5px;
+    color: #999;
+    max-height: 180px;
     overflow-y: auto;
-    z-index: 999;
-    padding: 12px 14px;
-    font: 11px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    color: #d1d5db;
-    background: rgba(10,10,14,.94);
-    border: 1px solid var(--stroke);
-    border-radius: 14px;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
     white-space: pre-wrap;
   }
   .debug-panel.visible { display: block; }
-  .debug-panel .ok   { color: #86efac; }
-  .debug-panel .fail { color: #fda4af; }
-
-  @keyframes rise {
-    from { opacity: 0; transform: translateY(14px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  .app-header, .release-card, .block {
-    animation: rise .6s cubic-bezier(.22,1,.36,1) both;
-  }
-  .release-card { animation-delay: .06s; }
+  .debug-panel .ok { color: #4ade80; }
+  .debug-panel .fail { color: #f87171; }
 
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
   }
 </style>
-<script src="/_aistudio-iframe.js?v=1f94f900"></script></head>
+</head>
 
 <body>
 <div class="app">
@@ -601,80 +676,67 @@
   <header class="app-header">
     <div class="logo-wrap">
       <div class="logo-badge">
-        <svg class="logo-svg" width="32" height="32" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <mask id="musicon-cutout">
-              <rect width="100" height="100" fill="white" />
-              <!-- Круглая головка ноты -->
-              <circle cx="50" cy="65" r="23" fill="black" />
-              <!-- Штиль ноты вверх -->
-              <rect x="42" y="0" width="16" height="66" fill="black" />
-            </mask>
-          </defs>
-          <rect width="100" height="100" rx="6" fill="#c0262d" mask="url(#musicon-cutout)" />
-        </svg>
+        <img src="logo.png" alt="MUSICon" />
       </div>
-      <div class="logo">MUSI<span>Con</span></div>
-      <div class="version">v0.351</div>
+      <div class="logo">MUSIC<span>on</span></div>
+      <div class="version">v0.4</div>
     </div>
   </header>
 
   <div id="latestContainer">
-    <div class="status">Загрузка последнего релиза…</div>
+    <div class="status">Загрузка свежей оценки…</div>
   </div>
 
   <section class="block">
-    <button class="accordion-btn" id="accBtn" aria-expanded="false" aria-controls="accPanel">
-      <span class="label">Все оценки <span class="count" id="totalCount">—</span></span>
-      <svg class="chevron" width="18" height="18" viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="m6 9 6 6 6-6"/>
+    <button class="accordion-btn" id="accBtn" aria-expanded="false">
+      <span class="label">Все оценки <span class="count" id="allCount">…</span></span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6 9 12 15 18 9"></polyline>
       </svg>
     </button>
-    <div class="accordion-panel" id="accPanel">
-      <div class="accordion-inner">
-        <ul class="release-list" id="releaseList">
-          <li class="status">Загрузка оценок…</li>
-        </ul>
-      </div>
+    <div class="accordion-content" id="accContent">
+      <ul class="release-list" id="releaseList"></ul>
     </div>
   </section>
 
   <section class="block">
-    <h2 class="block-title">Топ артистов <span class="hint">средний балл (по трекам)</span></h2>
+    <div class="block-header">
+      <h2 class="block-title">
+        Топ артистов
+        <span class="block-count">ТОП-5</span>
+      </h2>
+    </div>
     <div class="artists-card" id="artistsCard">
-      <div class="status">Загрузка топа…</div>
+      <div class="status">Загрузка артистов…</div>
     </div>
   </section>
 
 </div>
 
 <div class="artist-view" id="artistView" aria-hidden="true">
-  <div class="artist-view-inner">
-    <button class="back-btn" id="backBtn" aria-label="Назад">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M15 18l-6-6 6-6"/>
+  <div class="artist-view-header">
+    <button class="back-btn" id="backBtn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
       </svg>
       Назад
     </button>
-    <div id="artistViewContent"></div>
+    <div style="font-size:12px;font-weight:600;color:var(--muted)">Дискография</div>
+    <div style="width:60px"></div>
   </div>
+  <div class="artist-view-scroll" id="artistViewContent"></div>
 </div>
 
 <div class="debug-panel" id="debugPanel"></div>
 
 <script>
-  /* ============================================================
-     НАСТРОЙКИ
-     ============================================================ */
   const API_URL = "https://script.google.com/macros/s/AKfycbx-eCuxFNWP3mQbrQZuxwKCvU9YFoS2YMdkNPedDm8W2GbdVN3WR-gsiczSlRW0ZmXh/exec";
 
-  const COVER_CACHE_KEY = "musicon_covers_v7";
+  const COVER_CACHE_KEY = "musicon_covers_v8";
   const NEGATIVE_TTL_MS = 60 * 60 * 1000;
 
   const DEBUG = new URLSearchParams(location.search).has("debug");
-
   const DISCOGS_TOKEN = "ВАШ_ТОКЕН_DISCOGS";
 
   const debugLines = [];
@@ -691,9 +753,6 @@
     console.log("[MUSICon]", line);
   }
 
-  /* ============================================================
-     TELEGRAM
-     ============================================================ */
   if (window.Telegram?.WebApp) {
     const tg = window.Telegram.WebApp;
     tg.ready();
@@ -707,13 +766,9 @@
     try { window.Telegram?.WebApp?.HapticFeedback?.impactOccurred(style); } catch (e) {}
   };
 
-  /* ============================================================
-     УТИЛИТЫ И РАЗДЕЛЕНИЕ СОВМЕСТНЫХ АРТИСТОВ
-     ============================================================ */
   const $  = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 
-  // Разбивает строку с артистами по точке с запятой ";"
   function splitArtists(str) {
     if (!str) return [];
     return String(str)
@@ -722,7 +777,6 @@
       .filter(Boolean);
   }
 
-  // Создает отдельные кликабельные элементы для каждого артиста
   function renderArtistLinks(artistStr) {
     const list = splitArtists(artistStr);
     if (!list.length) return escapeHtml(artistStr || "");
@@ -741,7 +795,7 @@
   }
   function artistGradient(name) {
     const hash = stringHash(name || "?");
-    const hue1 = (hash % 40) + 345; // красно-рубиновые и бордовые оттенки
+    const hue1 = (hash % 40) + 345;
     const hue2 = (hue1 + 25) % 360;
     return `linear-gradient(135deg, hsl(${hue1}, 72%, 46%), hsl(${hue2}, 78%, 32%))`;
   }
@@ -763,361 +817,230 @@
   }
   const initial = (name) => (name || "?").trim().charAt(0).toUpperCase();
 
-  /* ============================================================
-     ПРОВЕРКА «ПОДЛИННОСТИ» — совпадает ли исполнитель
-     ============================================================ */
-  function normalizeName(s) {
+  function clean(s) {
     return String(s || "")
       .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^\p{L}\p{N}]/gu, "")
+      .replace(/\([^)]*\)/g, " ")
+      .replace(/\[[^\]]*\]/g, " ")
+      .replace(/[\.,\/#!$%\^&\*;:{}=\-_`~()]/g, " ")
+      .replace(/\s+/g, " ")
       .trim();
   }
-
-  function artistMatches(queryArtist, candidateArtist) {
-    const q = normalizeName(queryArtist);
-    const c = normalizeName(candidateArtist);
-    if (!q || !c) return false;
-    if (q === c) return true;
-    if (c.includes(q) || q.includes(c)) return true;
-
-    // Поддержка проверки соавторов при совместных релизах
-    if (queryArtist && queryArtist.includes(";")) {
-      const parts = splitArtists(queryArtist).map(normalizeName);
-      if (parts.some(p => p && (c.includes(p) || p.includes(c)))) return true;
-    }
+  function wordOverlap(a, b) {
+    const wa = new Set(clean(a).split(" ").filter(w => w.length > 1));
+    const wb = new Set(clean(b).split(" ").filter(w => w.length > 1));
+    if (!wa.size || !wb.size) return 0;
+    let common = 0;
+    for (const w of wa) if (wb.has(w)) common++;
+    return common / Math.min(wa.size, wb.size);
+  }
+  function artistMatches(targetArtist, candidateArtist) {
+    const targetClean = clean(targetArtist);
+    const candClean   = clean(candidateArtist);
+    if (!targetClean || !candClean) return false;
+    if (targetClean === candClean) return true;
+    if (targetClean.includes(candClean) || candClean.includes(targetClean)) return true;
+    if (wordOverlap(targetClean, candClean) >= 0.5) return true;
     return false;
   }
 
-  /* ============================================================
-     КЭШ ОБЛОЖЕК
-     ============================================================ */
-  function loadCoverCache() {
-    try { return JSON.parse(localStorage.getItem(COVER_CACHE_KEY)) || {}; }
-    catch { return {}; }
-  }
-  function saveCoverCache(c) {
-    try { localStorage.setItem(COVER_CACHE_KEY, JSON.stringify(c)); } catch {}
-  }
+  let coverCache = {};
+  try {
+    coverCache = JSON.parse(localStorage.getItem(COVER_CACHE_KEY) || "{}");
+  } catch (e) { coverCache = {}; }
 
-  const coverCache = loadCoverCache();
-  const coverRequests = new Map();
-
-  function getCacheEntry(key) {
-    const e = coverCache[key];
-    if (!e) return { state: "miss" };
-    if (typeof e === "string") return { state: "hit", url: e };
-    if (e.url) return { state: "hit", url: e.url };
-    if (e.none) {
-      if (Date.now() - e.none < NEGATIVE_TTL_MS) return { state: "none" };
-      delete coverCache[key];
-      saveCoverCache(coverCache);
-      return { state: "miss" };
-    }
-    return { state: "miss" };
-  }
-  function setCacheHit(key, url) {
-    coverCache[key] = { url };
-    saveCoverCache(coverCache);
-  }
-  function setCacheNone(key) {
-    coverCache[key] = { none: Date.now() };
-    saveCoverCache(coverCache);
-  }
-
-  /* ============================================================
-     СЕТЕВЫЕ ХЕЛПЕРЫ
-     ============================================================ */
-  function fetchWithTimeout(url, options = {}, timeoutMs = 6000) {
-    const controller = new AbortController();
-    const id = setTimeout(() => controller.abort(), timeoutMs);
-    return fetch(url, { ...options, signal: controller.signal })
-      .finally(() => clearTimeout(id));
-  }
-
-  function firstNonNull(promises) {
-    return new Promise((resolve) => {
-      let pending = promises.length;
-      if (pending === 0) return resolve(null);
-      promises.forEach(p => {
-        Promise.resolve(p)
-          .then(v => {
-            if (v) resolve(v);
-            else if (--pending === 0) resolve(null);
-          })
-          .catch(() => {
-            if (--pending === 0) resolve(null);
-          });
-      });
-    });
-  }
-
-  /* ============================================================
-     ИСТОЧНИКИ ОБЛОЖЕК
-     ============================================================ */
-  async function fetchITunes(artist, album) {
-    const artists = splitArtists(artist);
-    const queries = [
-      `${artist} ${album}`.trim(),
-      `${album} ${artist}`.trim(),
-      ...artists.map(a => `${a} ${album}`.trim()),
-      album.trim()
-    ].filter(Boolean);
-
-    for (const q of queries) {
-      for (const country of ["ru", "us"]) {
-        const url = `https://itunes.apple.com/search?term=${encodeURIComponent(q)}&entity=album&country=${country}&limit=10`;
-        try {
-          const res = await fetchWithTimeout(url, { cache: "no-store" }, 5000);
-          if (!res.ok) continue;
-          const data = await res.json();
-          if (!data?.results?.length) continue;
-
-          for (const r of data.results) {
-            const candidateArtist = r.artistName || "";
-            if (!artistMatches(artist, candidateArtist)) {
-              dbg(`iTunes skip [${candidateArtist} ≠ ${artist}]: ${r.collectionName || "?"}`, false);
-              continue;
-            }
-            const art = r.artworkUrl100 || r.artworkUrl60;
-            if (art) {
-              const big = art
-                .replace(/100x100(bb)?/, "600x600$1")
-                .replace(/60x60(bb)?/,  "600x600$1");
-              dbg(`iTunes (${country}) OK: "${artist}" — "${r.collectionName}"`, true);
-              return big;
-            }
-          }
-        } catch (e) {}
-      }
-    }
-    return null;
-  }
-
-  async function fetchDeezer(artist, album) {
-    const cleanQuery = artist.includes(";") ? artist.split(";")[0].trim() : artist;
-    const q = encodeURIComponent(`${cleanQuery} ${album}`.trim());
-    const target = `https://api.deezer.com/search/album?q=${q}&limit=10`;
-    const proxy = `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(target)}`;
+  function saveCache() {
     try {
-      const res = await fetchWithTimeout(proxy, { cache: "no-store" }, 6000);
-      if (!res.ok) return null;
-      const data = await res.json();
-      const albums = data?.data || [];
-      for (const a of albums) {
-        const candidateArtist = a.artist?.name || "";
-        if (!artistMatches(artist, candidateArtist)) {
-          dbg(`Deezer skip [${candidateArtist} ≠ ${artist}]: ${a.title || "?"}`, false);
-          continue;
-        }
-        const cover = a.cover_xl || a.cover_big || a.cover_medium;
-        if (cover) {
-          dbg(`Deezer OK: "${artist}" — "${a.title}"`, true);
-          return cover;
-        }
-      }
+      localStorage.setItem(COVER_CACHE_KEY, JSON.stringify(coverCache));
     } catch (e) {}
-    return null;
   }
-
-  let mbLastRequestTime = 0;
-  async function mbApiFetch(url) {
-    const wait = Math.max(0, 1100 - (Date.now() - mbLastRequestTime));
-    if (wait > 0) await new Promise(r => setTimeout(r, wait));
-    mbLastRequestTime = Date.now();
-    return fetchWithTimeout(url, { headers: { "Accept": "application/json" } }, 6000);
+  function makeKey(artist, album) {
+    return `${clean(artist)}:::${clean(album)}`;
   }
-  async function caaFetch(url) {
-    return fetchWithTimeout(url, { headers: { "Accept": "application/json" } }, 6000);
-  }
-
-  async function fetchMusicBrainz(artist, album) {
-    try {
-      const searchArtist = artist.includes(";") ? artist.split(";")[0].trim() : artist;
-      const query = `artist:"${searchArtist}" AND release:"${album}"`;
-      const url = `https://musicbrainz.org/ws/2/release-group/?query=${encodeURIComponent(query)}&fmt=json&limit=5`;
-      const res = await mbApiFetch(url);
-      if (!res.ok) return null;
-      const data = await res.json();
-      const groups = data?.["release-groups"] || [];
-      if (!groups.length) return null;
-
-      const tries = groups.map(async (g) => {
-        const credits = g["artist-credit"] || [];
-        const names = credits.map(c => c.name || c.artist?.name).filter(Boolean);
-        if (!names.some(n => artistMatches(artist, n))) {
-          dbg(`MusicBrainz skip [${names.join(", ")} ≠ ${artist}]: ${g.title}`, false);
-          throw new Error("artist mismatch");
-        }
-
-        const caaRes = await caaFetch(`https://coverartarchive.org/release-group/${g.id}`);
-        if (!caaRes.ok) throw new Error("no caa");
-        const caaJson = await caaRes.json();
-        const images = caaJson?.images || [];
-        if (!images.length) throw new Error("no images");
-        const front = images.find(i => i.front) || images[0];
-        const thumbs = front.thumbnails || {};
-        const imageUrl = thumbs["500"] || thumbs["large"] || thumbs["1200"] || front.image;
-        if (!imageUrl) throw new Error("no url");
-        return imageUrl;
-      });
-
-      try {
-        const imageUrl = await Promise.any(tries);
-        if (imageUrl) {
-          dbg(`MusicBrainz OK: "${artist}" — "${album}"`, true);
-          return imageUrl;
-        }
-      } catch {}
-    } catch (e) {}
-    return null;
-  }
-
-  async function fetchDiscogs(artist, album) {
-    if (!DISCOGS_TOKEN) return null;
-    const cleanArtist = artist.includes(";") ? artist.split(";")[0].trim() : artist;
-    const q = encodeURIComponent(`${cleanArtist} ${album}`.trim());
-    const url = `https://api.discogs.com/database/search?q=${q}&type=release&per_page=3`;
-    try {
-      const res = await fetchWithTimeout(url, {
-        headers: {
-          "Authorization": `Discogs token=${DISCOGS_TOKEN}`,
-          "User-Agent": "MUSICon/0.351"
-        }
-      }, 7000);
-      if (!res.ok) return null;
-      const data = await res.json();
-      const results = data?.results || [];
-      for (const r of results) {
-        const img = r.cover_image || r.thumb;
-        if (img && !img.includes("spacer.gif")) {
-          dbg(`Discogs OK: ${artist} - ${album}`, true);
-          return img;
-        }
-      }
-    } catch (e) {}
-    return null;
-  }
-
-  /* ============================================================
-     ГЛАВНАЯ ЛОГИКА ОБЛОЖЕК
-     ============================================================ */
-  async function resolveCover(artist, album, explicitUrl) {
-    if (explicitUrl) return explicitUrl;
-
-    const key = `${artist}|${album}`;
-
-    const cached = getCacheEntry(key);
-    if (cached.state === "hit") {
-      dbg(`cache: ${key}`, true);
-      return cached.url;
-    }
-    if (cached.state === "none") {
-      dbg(`cache (no cover): ${key}`, false);
+  function getCached(artist, album) {
+    const key = makeKey(artist, album);
+    const rec = coverCache[key];
+    if (!rec) return undefined;
+    if (typeof rec === "string") return rec;
+    if (rec.url) return rec.url;
+    if (rec.failedAt && (Date.now() - rec.failedAt < NEGATIVE_TTL_MS)) {
       return null;
     }
-    if (coverRequests.has(key)) return coverRequests.get(key);
-
-    const promise = (async () => {
-      const url = await firstNonNull([
-        fetchITunes(artist, album),
-        fetchDeezer(artist, album),
-        fetchMusicBrainz(artist, album)
-      ]);
-      if (url) {
-        setCacheHit(key, url);
-        dbg(`resolved (digital): ${key}`, true);
-        return url;
-      }
-
-      dbg(`digital failed, trying Discogs: ${key}`, false);
-      const discogsUrl = await fetchDiscogs(artist, album);
-      if (discogsUrl) {
-        setCacheHit(key, discogsUrl);
-        dbg(`resolved (Discogs fallback): ${key}`, true);
-        return discogsUrl;
-      }
-
-      setCacheNone(key);
-      dbg(`no cover anywhere: ${key}`, false);
-      return null;
-    })();
-
-    coverRequests.set(key, promise);
-    return promise;
+    return undefined;
+  }
+  function setCached(artist, album, url) {
+    const key = makeKey(artist, album);
+    if (url) {
+      coverCache[key] = { url, ts: Date.now() };
+    } else {
+      coverCache[key] = { failedAt: Date.now() };
+    }
+    saveCache();
   }
 
-  /* ============================================================
-     HTML ОБЛОЖКИ
-     ============================================================ */
-  function coverHTML({ artist, album, explicitUrl, sizeClass }) {
+  async function searchDiscogs(artist, album) {
+    if (!DISCOGS_TOKEN || DISCOGS_TOKEN === "ВАШ_ТОКЕН_DISCOGS") return null;
+
+    const query = `${artist} - ${album}`.trim();
+    const url = `https://api.discogs.com/database/search?q=${encodeURIComponent(query)}&type=release&per_page=3&token=${DISCOGS_TOKEN}`;
+
+    try {
+      const res = await fetch(url, {
+        headers: { "User-Agent": "MUSIConApp/0.4 (+https://t.me)" }
+      });
+      if (!res.ok) {
+        dbg(`Discogs HTTP ${res.status} для "${query}"`, false);
+        return null;
+      }
+      const data = await res.json();
+      const results = data.results || [];
+      if (!results.length) return null;
+
+      for (const item of results) {
+        const itemTitle = item.title || "";
+        const parts = itemTitle.split(" - ");
+        const candArtist = parts[0] || "";
+        const candAlbum  = parts.slice(1).join(" - ") || itemTitle;
+
+        const aOk = artistMatches(artist, candArtist);
+        const tOk = wordOverlap(album, candAlbum) >= 0.4 || clean(candAlbum).includes(clean(album));
+
+        if (aOk && tOk && item.cover_image && !item.cover_image.endsWith("spacer.gif")) {
+          dbg(`Discogs: найдено для "${query}" -> "${itemTitle}"`, true);
+          return item.cover_image;
+        }
+      }
+      return null;
+    } catch (e) {
+      dbg(`Discogs ошибка "${query}": ${e.message}`, false);
+      return null;
+    }
+  }
+
+  async function searchItunes(term, expectedArtist, expectedTitle) {
+    const url = `https://itunes.apple.com/search?term=${encodeURIComponent(term)}&entity=album&limit=5`;
+    try {
+      const res = await fetch(url);
+      if (!res.ok) return null;
+      const data = await res.json();
+      const results = data.results || [];
+      if (!results.length) return null;
+
+      for (const item of results) {
+        if (!artistMatches(expectedArtist, item.artistName)) continue;
+        const albumClean = clean(expectedTitle);
+        const candClean  = clean(item.collectionName);
+        if (candClean.includes(albumClean) || albumClean.includes(candClean) || wordOverlap(albumClean, candClean) >= 0.4) {
+          const raw = item.artworkUrl100 || item.artworkUrl60;
+          if (raw) return raw.replace(/100x100bb|60x60bb/, "600x600bb");
+        }
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async function fetchCover(artist, album) {
+    const cached = getCached(artist, album);
+    if (cached !== undefined) return cached;
+
+    let cover = await searchDiscogs(artist, album);
+
+    if (!cover) {
+      cover = await searchItunes(`${artist} ${album}`, artist, album);
+    }
+    if (!cover) {
+      cover = await searchItunes(album, artist, album);
+    }
+
+    setCached(artist, album, cover);
+    return cover;
+  }
+
+  function coverHTML({ artist, album, explicitUrl, sizeClass = "small" }) {
+    const init = escapeHtml(initial(artist));
     const bg   = artistGradient(artist);
-    const init = escapeHtml(initial(album || artist || "?"));
-    const cls  = sizeClass === "big" ? "big" : "small";
+    const key  = makeKey(artist, album);
+
+    if (explicitUrl) {
+      return `
+        <div class="cover ${sizeClass}" style="background:${bg}">
+          <span class="cover-initial">${init}</span>
+          <img src="${escapeHtml(explicitUrl)}" alt="" loading="lazy"
+               onload="this.previousElementSibling.style.display='none'"
+               onerror="this.remove()">
+        </div>
+      `;
+    }
+
+    const cached = getCached(artist, album);
+    if (cached) {
+      return `
+        <div class="cover ${sizeClass}" style="background:${bg}">
+          <span class="cover-initial">${init}</span>
+          <img src="${escapeHtml(cached)}" alt="" loading="lazy"
+               onload="this.previousElementSibling.style.display='none'"
+               onerror="this.remove()">
+        </div>
+      `;
+    }
+
     return `
-      <div class="cover-wrap ${cls}" style="background:${bg}">
+      <div class="cover ${sizeClass} cover-placeholder" style="background:${bg}"
+           data-artist="${escapeHtml(artist)}"
+           data-album="${escapeHtml(album)}"
+           data-key="${escapeHtml(key)}">
         <span class="cover-initial">${init}</span>
-        <img alt=""
-             data-cover-artist="${escapeHtml(artist)}"
-             data-cover-album="${escapeHtml(album)}"
-             data-cover-url="${escapeHtml(explicitUrl || "")}">
       </div>
     `;
   }
 
-  async function hydrateCovers(root = document) {
-    const imgs = $$("img[data-cover-album]", root).filter(i => !i.dataset.hydrated);
-    await Promise.all(imgs.map(async (img) => {
-      img.dataset.hydrated = "1";
-      try {
-        const url = await resolveCover(
-          img.dataset.coverArtist,
-          img.dataset.coverAlbum,
-          img.dataset.coverUrl
-        );
-        if (!url) return;
+  async function hydrateCovers(container) {
+    const placeholders = $$(".cover-placeholder", container);
+    if (!placeholders.length) return;
 
-        img.addEventListener("error", () => {
-          const k = `${img.dataset.coverArtist}|${img.dataset.coverAlbum}`;
-          setCacheNone(k);
-          dbg(`img failed to load: ${k}`, false);
-          img.remove();
-        }, { once: true });
+    for (const ph of placeholders) {
+      const art = ph.getAttribute("data-artist");
+      const alb = ph.getAttribute("data-album");
+      if (!art || !alb) continue;
 
+      fetchCover(art, alb).then(url => {
+        if (!url || !ph.isConnected) return;
+        const img = document.createElement("img");
+        img.loading = "lazy";
+        img.alt = "";
+        img.onload = () => {
+          const initSpan = ph.querySelector(".cover-initial");
+          if (initSpan) initSpan.style.display = "none";
+          ph.classList.remove("cover-placeholder");
+        };
+        img.onerror = () => img.remove();
         img.src = url;
-      } catch {}
-    }));
+        ph.appendChild(img);
+      });
+    }
   }
 
-  /* ============================================================
-     ГЛОБАЛЬНОЕ СОСТОЯНИЕ И МАТЕМАТИЧЕСКИЙ РАСЧЕТ РЕЙТИНГА
-     ============================================================ */
   let allReleases = [];
+  let globalArtistImages = {};
   const artistMap = new Map();
   let currentArtist = null;
 
-  function buildArtistMap(releases) {
+  function buildArtistMap() {
     artistMap.clear();
-    for (const r of releases) {
-      const list = splitArtists(r.artist);
-      const artists = list.length ? list : [r.artist || "?"];
-      const isSolo = artists.length === 1;
+    for (const r of allReleases) {
+      const artists = splitArtists(r.artist);
+      if (!artists.length && r.artist) artists.push(r.artist);
 
       for (const name of artists) {
         if (!artistMap.has(name)) {
-          artistMap.set(name, { name, releases: [], imageUrl: "" });
+          const img = globalArtistImages[name] || globalArtistImages[name.trim()] || "";
+          artistMap.set(name, { name, releases: [], imageUrl: img });
         }
         const entry = artistMap.get(name);
         if (!entry.releases.includes(r)) {
           entry.releases.push(r);
-        }
-        // Если у релиза есть фото артиста:
-        // отдаем приоритет сольным релизам артиста или заполняем, если еще не было фото
-        if (r.artist_image_url) {
-          if (!entry.imageUrl || isSolo) {
-            entry.imageUrl = r.artist_image_url;
-          }
         }
       }
     }
@@ -1126,7 +1049,6 @@
     }
   }
 
-  // Честный расчет рейтинга артиста: Sum(score * tracks) / Sum(tracks)
   function calculateArtistStats(entry) {
     const releases = entry.releases;
     let totalPoints = 0;
@@ -1142,84 +1064,66 @@
       totalTracks += tracks;
     }
 
-    const avg = totalTracks > 0 ? (totalPoints / totalTracks) : 0;
+    const rawAvg = totalTracks > 0 ? (totalPoints / totalTracks) : 0;
+    const GLOBAL_AVERAGE = 700;
+    const MIN_TRACKS = 10;
+    const weightedAvg = (totalPoints + (GLOBAL_AVERAGE * MIN_TRACKS)) / (totalTracks + MIN_TRACKS);
     const bestScore = releases.length ? Math.max(...releases.map(r => r.avg1000)) : 0;
 
     return {
-      avg,
       count: releases.length,
       totalTracks,
+      rawAvg,
+      weightedAvg,
       bestScore
     };
   }
 
-  /* ============================================================
-     РЕНДЕР
-     ============================================================ */
-  function renderLatest(releases) {
-    const container = $("#latestContainer");
-    if (!releases.length) {
-      container.innerHTML = `<div class="status">Пока нет оценённых релизов</div>`;
+  function renderLatest(r) {
+    const c = $("#latestContainer");
+    if (!r) {
+      c.innerHTML = `<div class="status">Релизы не найдены</div>`;
       return;
     }
-    const latest = [...releases].sort((a, b) => {
-      const da = a.date || "", db = b.date || "";
-      if (da && db) return db.localeCompare(da);
-      return 0;
-    })[0] || releases[releases.length - 1];
 
-    const score = Math.round(latest.avg1000);
-    const pct   = Math.min(100, (latest.avg1000 / 1000) * 100);
+    const trackLabel = r.track_count ? ` · ${r.track_count} ${plural(r.track_count, "трек", "трека", "треков")}` : "";
 
-    const trackLabel = latest.track_count ? ` · ${latest.track_count} ${plural(latest.track_count, "трек", "трека", "треков")}` : "";
-
-    container.innerHTML = `
-      <section class="release-card">
-        <div class="release-top">
+    c.innerHTML = `
+      <div class="latest-card">
+        <div class="latest-top">
+          <span class="pill">Свежая оценка</span>
+          <span class="latest-date">${escapeHtml(r.date || "Недавно")}</span>
+        </div>
+        <div class="latest-body">
           ${coverHTML({
-            artist: latest.artist,
-            album:  latest.release,
-            explicitUrl: latest.cover_url,
-            sizeClass: "big"
+            artist: r.artist,
+            album: r.release,
+            explicitUrl: r.cover_url,
+            sizeClass: "large"
           })}
-          <div class="release-meta">
-            <span class="pill">Последний релиз</span>
-            <h1 class="release-title">${escapeHtml(latest.release)}</h1>
-            <p class="release-artist">
-              ${renderArtistLinks(latest.artist)}
-              · ${escapeHtml(latest.type || "")}${trackLabel}
-            </p>
-            ${latest.system ? `<p class="release-system">Система: ${escapeHtml(latest.system)}</p>` : ""}
+          <div class="latest-info">
+            <div class="latest-title" title="${escapeHtml(r.release)}">${escapeHtml(r.release)}</div>
+            <div class="latest-artist">
+              ${renderArtistLinks(r.artist)}
+            </div>
+            <div class="latest-meta">${escapeHtml(r.type || "Релиз")}${trackLabel}</div>
+          </div>
+          <div class="latest-score-box">
+            <div class="score">${Math.round(r.avg1000)}</div>
+            <div class="score-label">Балл</div>
           </div>
         </div>
-        <div class="rating-row">
-          <div class="score">${score}</div>
-          <div class="bar"><i data-width="${pct.toFixed(1)}%"></i></div>
-        </div>
-      </section>
+      </div>
     `;
-
-    requestAnimationFrame(() => {
-      const bar = $(".bar i", container);
-      if (bar) setTimeout(() => { bar.style.width = bar.dataset.width; }, 200);
-    });
-
-    hydrateCovers(container);
+    hydrateCovers(c);
   }
 
-  function renderReleaseList(releases) {
+  function renderReleases() {
     const list = $("#releaseList");
-    $("#totalCount").textContent = releases.length;
-    if (!releases.length) {
-      list.innerHTML = `<li class="status">Нет данных</li>`;
-      return;
-    }
-    const sorted = [...releases].sort((a, b) => {
-      const da = a.date || "", db = b.date || "";
-      if (da && db) return db.localeCompare(da);
-      return 0;
-    });
-    list.innerHTML = sorted.map(r => {
+    const count = $("#allCount");
+    count.textContent = `(${allReleases.length})`;
+
+    list.innerHTML = allReleases.map(r => {
       const trackLabel = r.track_count ? ` · ${r.track_count} ${plural(r.track_count, "трек", "трека", "треков")}` : "";
       return `
       <li class="release-item">
@@ -1248,29 +1152,32 @@
       card.innerHTML = `<div class="status">Нет данных для топа</div>`;
       return;
     }
+
     const artists = [...artistMap.values()]
       .map(a => {
         const stats = calculateArtistStats(a);
         return {
           name: a.name,
-          avg:  stats.avg,
+          avg: stats.weightedAvg,
+          rawAvg: stats.rawAvg,
           count: stats.count,
           totalTracks: stats.totalTracks,
           imageUrl: a.imageUrl
         };
       })
       .sort((a, b) => b.avg - a.avg)
-      .slice(0, 10);
+      .slice(0, 5);
 
     card.innerHTML = artists.map((a, i) => {
       const bg   = artistGradient(a.name);
       const init = escapeHtml(initial(a.name));
+      const rankNum = i + 1;
       const imgHTML = a.imageUrl
         ? `<img src="${escapeHtml(a.imageUrl)}" alt="" onerror="this.remove()">`
         : "";
       return `
-        <div class="artist-row ${i < 3 ? "top" : ""}" data-artist="${escapeHtml(a.name)}">
-          <span class="rank">${i + 1}</span>
+        <div class="artist-row rank-${rankNum}" data-artist="${escapeHtml(a.name)}">
+          <span class="rank">${rankNum}</span>
           <div class="avatar" style="background:${bg}">
             <span class="cover-initial">${init}</span>
             ${imgHTML}
@@ -1285,9 +1192,6 @@
     }).join("");
   }
 
-  /* ============================================================
-     ЭКРАН АРТИСТА
-     ============================================================ */
   function openArtist(name) {
     const entry = artistMap.get(name);
     if (!entry) return;
@@ -1337,111 +1241,102 @@
         <div class="artist-hero-stats">
           <span class="stat-chip"><strong>${stats.count}</strong> ${plural(stats.count, "релиз", "релиза", "релизов")}</span>
           <span class="stat-chip"><strong>${stats.totalTracks}</strong> ${plural(stats.totalTracks, "трек", "трека", "треков")}</span>
-          <span class="stat-chip">средний <strong>${Math.round(stats.avg)}</strong></span>
-          <span class="stat-chip">лучший <strong>${Math.round(stats.bestScore)}</strong></span>
+          <span class="stat-chip">Взвешенный балл: <strong>${Math.round(stats.weightedAvg)}</strong></span>
+          <span class="stat-chip">Лучший релиз: <strong>${Math.round(stats.bestScore)}</strong></span>
         </div>
       </div>
-      <section class="block">
-        <h2 class="block-title">Внутренний топ</h2>
-        <div class="artists-card" style="padding:8px 4px">
-          ${internalTop}
-        </div>
-      </section>
+
+      <div class="internal-top-title">Все релизы артиста (по баллам)</div>
+      <div class="internal-top">
+        ${internalTop}
+      </div>
     `;
 
+    hydrateCovers(content);
     view.classList.add("open");
     view.setAttribute("aria-hidden", "false");
     document.body.classList.add("locked");
-    hydrateCovers(content);
+
+    if (window.Telegram?.WebApp?.BackButton) {
+      window.Telegram.WebApp.BackButton.show();
+      window.Telegram.WebApp.BackButton.onClick(closeArtist);
+    }
   }
 
   function closeArtist() {
-    if (!currentArtist) return;
-    currentArtist = null;
-    haptic("light");
     const view = $("#artistView");
     view.classList.remove("open");
     view.setAttribute("aria-hidden", "true");
     document.body.classList.remove("locked");
+    currentArtist = null;
+    haptic("light");
+
+    if (window.Telegram?.WebApp?.BackButton) {
+      window.Telegram.WebApp.BackButton.hide();
+      window.Telegram.WebApp.BackButton.offClick(closeArtist);
+    }
   }
 
-  /* ============================================================
-     СОБЫТИЯ
-     ============================================================ */
-  const accBtn   = $("#accBtn");
-  const accPanel = $("#accPanel");
-  accBtn.addEventListener("click", () => {
-    const isOpen = accPanel.classList.toggle("open");
-    accBtn.classList.toggle("open", isOpen);
-    accBtn.setAttribute("aria-expanded", String(isOpen));
-    haptic("light");
-    if (isOpen) hydrateCovers(accPanel);
+  document.addEventListener("click", e => {
+    const link = e.target.closest(".artist-link");
+    if (link) {
+      e.stopPropagation();
+      const artist = link.getAttribute("data-artist");
+      if (artist) openArtist(artist);
+      return;
+    }
+
+    const row = e.target.closest(".artist-row");
+    if (row) {
+      const artist = row.getAttribute("data-artist");
+      if (artist) openArtist(artist);
+      return;
+    }
   });
+
   $("#backBtn").addEventListener("click", closeArtist);
 
-  document.addEventListener("click", (e) => {
-    const link = e.target.closest(".artist-link, .artist-row");
-    if (!link) return;
-    const name = link.dataset.artist || link.querySelector(".artist-name")?.textContent?.trim();
-    if (name) { e.preventDefault(); openArtist(name); }
+  const accBtn = $("#accBtn");
+  const accContent = $("#accContent");
+  accBtn.addEventListener("click", () => {
+    const open = accContent.classList.toggle("open");
+    accBtn.setAttribute("aria-expanded", String(open));
+    haptic("selection_change");
   });
 
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") closeArtist();
-  });
-
-  /* ============================================================
-     ЗАГРУЗКА ДАННЫХ
-     ============================================================ */
   async function loadData() {
     try {
-      const res = await fetch(API_URL, { cache: "no-store" });
+      const res = await fetch(API_URL);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      if (!Array.isArray(data)) throw new Error("Ожидался массив");
 
-      allReleases = data.map(row => {
-        const avg     = Number(row.avg) || 0;
-        const scale   = Number(row.scale) || 1000;
-        const avg1000 = Number(row.avg1000) ||
-          (avg && scale ? (avg / scale) * 1000 : 0);
-        
-        const rawTracks = Number(row.track_count ?? row["треки"] ?? row["треков"] ?? 0);
-        const typeStr   = String(row.type || "").trim();
-        let track_count = 1;
-        if (isFinite(rawTracks) && rawTracks > 0) {
-          track_count = Math.round(rawTracks);
-        } else {
-          if (/альбом|album|lp/i.test(typeStr)) track_count = 10;
-          else if (/ep|мини/i.test(typeStr)) track_count = 4;
-          else track_count = 1;
-        }
+      if (Array.isArray(data)) {
+        allReleases = data;
+        globalArtistImages = {};
+      } else {
+        allReleases = data.releases || [];
+        globalArtistImages = data.artists || {};
+      }
 
-        return {
-          artist:           row.artist || "",
-          release:          row.release || "",
-          type:             typeStr,
-          track_count,
-          system:           row.system || "",
-          cover_url:        row.cover_url || "",
-          artist_image_url: row.artist_image_url || "",
-          avg, avg1000,
-          date: row.date || ""
-        };
-      }).filter(r => r.release && r.artist);
+      buildArtistMap();
 
-      buildArtistMap(allReleases);
-      renderLatest(allReleases);
-      renderReleaseList(allReleases);
+      if (allReleases.length) {
+        renderLatest(allReleases[0]);
+      } else {
+        renderLatest(null);
+      }
+
+      renderReleases();
       renderArtists();
-
-      dbg(`Загружено релизов: ${allReleases.length}`, true);
-
     } catch (err) {
-      dbg(`Ошибка загрузки данных: ${err.message}`, false);
-      $("#latestContainer").innerHTML = `<div class="status error">Не удалось загрузить данные.</div>`;
-      $("#releaseList").innerHTML = `<li class="status error">Ошибка загрузки</li>`;
-      $("#artistsCard").innerHTML = `<div class="status error">Ошибка загрузки</div>`;
+      console.error(err);
+      $("#latestContainer").innerHTML = `
+        <div class="error-block">
+          Не удалось загрузить данные из таблицы.<br>
+          <small style="opacity:.8">${escapeHtml(err.message)}</small>
+        </div>
+      `;
+      $("#artistsCard").innerHTML = `<div class="status">Ошибка загрузки данных</div>`;
     }
   }
 
