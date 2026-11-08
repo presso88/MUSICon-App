@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
 <meta name="theme-color" content="#08080b" />
 <title>MusicOn</title>
- <link rel="icon" type="image/png" href="blob:https://gemini.google.com/251186a8-70e6-49e9-8898-f7a2fff2d47c">
+<link rel="icon" type="image/png" href="favicon.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -97,7 +97,7 @@
   .header-avatar {
     width: 40px; height: 40px;
     border-radius: 50%;
-    display: grid; place-items: center;
+    display: grid place-items: center;
     font-size: 15px; font-weight: 700;
     color: var(--muted);
     background: linear-gradient(135deg, #2a2a35, #17171d);
@@ -139,8 +139,6 @@
   .cover-wrap.big .cover-initial { font-size: 34px; }
   .cover-wrap.small .cover-initial { font-size: 17px; }
 
-  /* Важно: у img НЕТ своего background — градиент/инициал
-     видны сквозь пустой img, пока картинка грузится. */
   .cover-wrap img {
     position: absolute;
     inset: 0;
@@ -207,7 +205,20 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .release-artist .artist-link { color: var(--muted); }
+  .artist-link {
+    cursor: pointer;
+    color: var(--muted);
+    transition: color .15s ease, text-decoration .15s ease;
+  }
+  .artist-link:hover, .artist-link:active {
+    color: #ffffff;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .artist-sep {
+    color: #5c5c69;
+    user-select: none;
+  }
   .release-system {
     margin-top: 4px;
     font-size: 11px;
@@ -574,7 +585,7 @@
     *, *::before, *::after { animation: none !important; transition: none !important; }
   }
 </style>
-</head>
+<script src="/_aistudio-iframe.js?v=1f94f900"></script></head>
 
 <body>
 <div class="app">
@@ -582,7 +593,7 @@
   <header class="app-header">
     <div class="logo-wrap">
       <div class="logo">Music<span>On</span></div>
-      <div class="version">v0.349</div>
+      <div class="version">v0.350</div>
     </div>
     <div class="header-avatar">M</div>
   </header>
@@ -638,8 +649,8 @@
      ============================================================ */
   const API_URL = "https://script.google.com/macros/s/AKfycbx-eCuxFNWP3mQbrQZuxwKCvU9YFoS2YMdkNPedDm8W2GbdVN3WR-gsiczSlRW0ZmXh/exec";
 
-  const COVER_CACHE_KEY = "musicon_covers_v5";
-  const NEGATIVE_TTL_MS = 60 * 60 * 1000; // 1 час — после неудачи не дёргаем источники
+  const COVER_CACHE_KEY = "musicon_covers_v6";
+  const NEGATIVE_TTL_MS = 60 * 60 * 1000;
 
   const DEBUG = new URLSearchParams(location.search).has("debug");
 
@@ -676,10 +687,27 @@
   };
 
   /* ============================================================
-     УТИЛИТЫ
+     УТИЛИТЫ И РАЗДЕЛЕНИЕ СОВМЕСТНЫХ АРТИСТОВ
      ============================================================ */
   const $  = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+
+  // Разбивает строку с артистами по точке с запятой ";"
+  function splitArtists(str) {
+    if (!str) return [];
+    return String(str)
+      .split(";")
+      .map(s => s.trim())
+      .filter(Boolean);
+  }
+
+  function renderArtistLinks(artistStr) {
+    const list = splitArtists(artistStr);
+    if (!list.length) return escapeHtml(artistStr || "");
+    return list.map(name =>
+      `<span class="artist-link" data-artist="${escapeHtml(name)}">${escapeHtml(name)}</span>`
+    ).join('<span class="artist-sep">; </span>');
+  }
 
   function stringHash(str) {
     let h = 0;
@@ -711,6 +739,33 @@
     return many;
   }
   const initial = (name) => (name || "?").trim().charAt(0).toUpperCase();
+
+  /* ============================================================
+     ПРОВЕРКА «ПОДЛИННОСТИ» — совпадает ли исполнитель
+     ============================================================ */
+  function normalizeName(s) {
+    return String(s || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^\p{L}\p{N}]/gu, "")
+      .trim();
+  }
+
+  function artistMatches(queryArtist, candidateArtist) {
+    const q = normalizeName(queryArtist);
+    const c = normalizeName(candidateArtist);
+    if (!q || !c) return false;
+    if (q === c) return true;
+    if (c.includes(q) || q.includes(c)) return true;
+
+    // Поддержка проверки соавторов при совместных релизах
+    if (queryArtist && queryArtist.includes(";")) {
+      const parts = splitArtists(queryArtist).map(normalizeName);
+      if (parts.some(p => p && (c.includes(p) || p.includes(c)))) return true;
+    }
+    return false;
+  }
 
   /* ============================================================
      КЭШ ОБЛОЖЕК
@@ -758,7 +813,6 @@
       .finally(() => clearTimeout(id));
   }
 
-  // Возвращает первый НЕ-null результат. Если все null/упали — null.
   function firstNonNull(promises) {
     return new Promise((resolve) => {
       let pending = promises.length;
@@ -780,29 +834,37 @@
      ИСТОЧНИКИ ОБЛОЖЕК
      ============================================================ */
 
-  /* --- 1. iTunes (ru + us) --- */
+  /* --- 1. iTunes (ru + us), с проверкой исполнителя --- */
   async function fetchITunes(artist, album) {
+    const artists = splitArtists(artist);
     const queries = [
       `${artist} ${album}`.trim(),
       `${album} ${artist}`.trim(),
+      ...artists.map(a => `${a} ${album}`.trim()),
       album.trim()
     ].filter(Boolean);
 
     for (const q of queries) {
       for (const country of ["ru", "us"]) {
-        const url = `https://itunes.apple.com/search?term=${encodeURIComponent(q)}&entity=album&country=${country}&limit=3`;
+        const url = `https://itunes.apple.com/search?term=${encodeURIComponent(q)}&entity=album&country=${country}&limit=10`;
         try {
           const res = await fetchWithTimeout(url, { cache: "no-store" }, 5000);
           if (!res.ok) continue;
           const data = await res.json();
           if (!data?.results?.length) continue;
+
           for (const r of data.results) {
+            const candidateArtist = r.artistName || "";
+            if (!artistMatches(artist, candidateArtist)) {
+              dbg(`iTunes skip [${candidateArtist} ≠ ${artist}]: ${r.collectionName || "?"}`, false);
+              continue;
+            }
             const art = r.artworkUrl100 || r.artworkUrl60;
             if (art) {
               const big = art
                 .replace(/100x100(bb)?/, "600x600$1")
                 .replace(/60x60(bb)?/,  "600x600$1");
-              dbg(`iTunes (${country}) OK: ${artist} - ${album}`, true);
+              dbg(`iTunes (${country}) OK: "${artist}" — "${r.collectionName}"`, true);
               return big;
             }
           }
@@ -812,10 +874,11 @@
     return null;
   }
 
-  /* --- 2. Deezer (через прокси) --- */
+  /* --- 2. Deezer (через прокси), с проверкой исполнителя --- */
   async function fetchDeezer(artist, album) {
-    const q = encodeURIComponent(`${artist} ${album}`.trim());
-    const target = `https://api.deezer.com/search/album?q=${q}&limit=3`;
+    const cleanQuery = artist.includes(";") ? artist.split(";")[0].trim() : artist;
+    const q = encodeURIComponent(`${cleanQuery} ${album}`.trim());
+    const target = `https://api.deezer.com/search/album?q=${q}&limit=10`;
     const proxy = `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(target)}`;
     try {
       const res = await fetchWithTimeout(proxy, { cache: "no-store" }, 6000);
@@ -823,9 +886,14 @@
       const data = await res.json();
       const albums = data?.data || [];
       for (const a of albums) {
+        const candidateArtist = a.artist?.name || "";
+        if (!artistMatches(artist, candidateArtist)) {
+          dbg(`Deezer skip [${candidateArtist} ≠ ${artist}]: ${a.title || "?"}`, false);
+          continue;
+        }
         const cover = a.cover_xl || a.cover_big || a.cover_medium;
         if (cover) {
-          dbg(`Deezer OK: ${artist} - ${album}`, true);
+          dbg(`Deezer OK: "${artist}" — "${a.title}"`, true);
           return cover;
         }
       }
@@ -833,7 +901,7 @@
     return null;
   }
 
-  /* --- 3. MusicBrainz + Cover Art Archive (JSON API) --- */
+  /* --- 3. MusicBrainz + Cover Art Archive, с проверкой исполнителя --- */
   let mbLastRequestTime = 0;
   async function mbApiFetch(url) {
     const wait = Math.max(0, 1100 - (Date.now() - mbLastRequestTime));
@@ -847,16 +915,23 @@
 
   async function fetchMusicBrainz(artist, album) {
     try {
-      const query = `artist:"${artist}" AND release:"${album}"`;
-      const url = `https://musicbrainz.org/ws/2/release-group/?query=${encodeURIComponent(query)}&fmt=json&limit=3`;
+      const searchArtist = artist.includes(";") ? artist.split(";")[0].trim() : artist;
+      const query = `artist:"${searchArtist}" AND release:"${album}"`;
+      const url = `https://musicbrainz.org/ws/2/release-group/?query=${encodeURIComponent(query)}&fmt=json&limit=5`;
       const res = await mbApiFetch(url);
       if (!res.ok) return null;
       const data = await res.json();
       const groups = data?.["release-groups"] || [];
       if (!groups.length) return null;
 
-      // Пробуем все группы параллельно, берём первый валидный URL.
       const tries = groups.map(async (g) => {
+        const credits = g["artist-credit"] || [];
+        const names = credits.map(c => c.name || c.artist?.name).filter(Boolean);
+        if (!names.some(n => artistMatches(artist, n))) {
+          dbg(`MusicBrainz skip [${names.join(", ")} ≠ ${artist}]: ${g.title}`, false);
+          throw new Error("artist mismatch");
+        }
+
         const caaRes = await caaFetch(`https://coverartarchive.org/release-group/${g.id}`);
         if (!caaRes.ok) throw new Error("no caa");
         const caaJson = await caaRes.json();
@@ -864,11 +939,7 @@
         if (!images.length) throw new Error("no images");
         const front = images.find(i => i.front) || images[0];
         const thumbs = front.thumbnails || {};
-        const imageUrl =
-          thumbs["500"] ||
-          thumbs["large"] ||
-          thumbs["1200"] ||
-          front.image;
+        const imageUrl = thumbs["500"] || thumbs["large"] || thumbs["1200"] || front.image;
         if (!imageUrl) throw new Error("no url");
         return imageUrl;
       });
@@ -876,7 +947,7 @@
       try {
         const imageUrl = await Promise.any(tries);
         if (imageUrl) {
-          dbg(`MusicBrainz OK: ${artist} - ${album}`, true);
+          dbg(`MusicBrainz OK: "${artist}" — "${album}"`, true);
           return imageUrl;
         }
       } catch {}
@@ -884,16 +955,17 @@
     return null;
   }
 
-  /* --- 4. Discogs (только как fallback) --- */
+  /* --- 4. Discogs (только fallback) --- */
   async function fetchDiscogs(artist, album) {
     if (!DISCOGS_TOKEN) return null;
-    const q = encodeURIComponent(`${artist} ${album}`.trim());
+    const cleanArtist = artist.includes(";") ? artist.split(";")[0].trim() : artist;
+    const q = encodeURIComponent(`${cleanArtist} ${album}`.trim());
     const url = `https://api.discogs.com/database/search?q=${q}&type=release&per_page=3`;
     try {
       const res = await fetchWithTimeout(url, {
         headers: {
           "Authorization": `Discogs token=${DISCOGS_TOKEN}`,
-          "User-Agent": "MusicOn/0.349"
+          "User-Agent": "MusicOn/0.350"
         }
       }, 7000);
       if (!res.ok) return null;
@@ -911,7 +983,7 @@
   }
 
   /* ============================================================
-     ГЛАВНАЯ ЛОГИКА: цифровые сначала, Discogs — fallback
+     ГЛАВНАЯ ЛОГИКА
      ============================================================ */
   async function resolveCover(artist, album, explicitUrl) {
     if (explicitUrl) return explicitUrl;
@@ -930,7 +1002,6 @@
     if (coverRequests.has(key)) return coverRequests.get(key);
 
     const promise = (async () => {
-      // Этап 1: цифровые источники параллельно, но БЕЗ Discogs.
       const url = await firstNonNull([
         fetchITunes(artist, album),
         fetchDeezer(artist, album),
@@ -942,7 +1013,6 @@
         return url;
       }
 
-      // Этап 2: Discogs — только если все цифровые провалились.
       dbg(`digital failed, trying Discogs: ${key}`, false);
       const discogsUrl = await fetchDiscogs(artist, album);
       if (discogsUrl) {
@@ -992,7 +1062,7 @@
 
         img.addEventListener("error", () => {
           const k = `${img.dataset.coverArtist}|${img.dataset.coverAlbum}`;
-          setCacheNone(k); // помечаем как «нет обложки», чтобы не долбить источники
+          setCacheNone(k);
           dbg(`img failed to load: ${k}`, false);
           img.remove();
         }, { once: true });
@@ -1003,7 +1073,7 @@
   }
 
   /* ============================================================
-     ГЛОБАЛЬНОЕ СОСТОЯНИЕ
+     ГЛОБАЛЬНОЕ СОСТОЯНИЕ И РАЗДЕЛЕНИЕ В ТОПЕ
      ============================================================ */
   let allReleases = [];
   const artistMap = new Map();
@@ -1012,13 +1082,26 @@
   function buildArtistMap(releases) {
     artistMap.clear();
     for (const r of releases) {
-      const name = r.artist;
-      if (!artistMap.has(name)) {
-        artistMap.set(name, { name, releases: [], imageUrl: "" });
+      const list = splitArtists(r.artist);
+      const artists = list.length ? list : [r.artist || "?"];
+      const isSolo = artists.length === 1;
+
+      for (const name of artists) {
+        if (!artistMap.has(name)) {
+          artistMap.set(name, { name, releases: [], imageUrl: "" });
+        }
+        const entry = artistMap.get(name);
+        if (!entry.releases.includes(r)) {
+          entry.releases.push(r);
+        }
+        // Если у релиза есть фото артиста:
+        // отдаем приоритет сольным релизам артиста или заполняем, если еще не было фото
+        if (r.artist_image_url) {
+          if (!entry.imageUrl || isSolo) {
+            entry.imageUrl = r.artist_image_url;
+          }
+        }
       }
-      const entry = artistMap.get(name);
-      entry.releases.push(r);
-      if (!entry.imageUrl && r.artist_image_url) entry.imageUrl = r.artist_image_url;
     }
     for (const entry of artistMap.values()) {
       entry.releases.sort((a, b) => b.avg1000 - a.avg1000);
@@ -1056,7 +1139,7 @@
             <span class="pill">Последний релиз</span>
             <h1 class="release-title">${escapeHtml(latest.release)}</h1>
             <p class="release-artist">
-              <span class="artist-link" data-artist="${escapeHtml(latest.artist)}">${escapeHtml(latest.artist)}</span>
+              ${renderArtistLinks(latest.artist)}
               · ${escapeHtml(latest.type || "")}
             </p>
             ${latest.system ? `<p class="release-system">Система: ${escapeHtml(latest.system)}</p>` : ""}
@@ -1100,7 +1183,7 @@
         <div class="item-info">
           <div class="item-title">${escapeHtml(r.release)}</div>
           <div class="item-artist">
-            <span class="artist-link" data-artist="${escapeHtml(r.artist)}">${escapeHtml(r.artist)}</span>
+            ${renderArtistLinks(r.artist)}
             · ${escapeHtml(r.type || "")}
           </div>
         </div>
@@ -1297,4 +1380,4 @@
   loadData();
 </script>
 </body>
-  </html>
+</html>
