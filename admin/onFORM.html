@@ -1,0 +1,1761 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow">
+  <title>onFORM — MUSICon</title>
+  <link rel="icon" type="image/png" href="favicon.png?v=3">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #08080a;
+      --card-bg: #111116;
+      --card-inner: #16161d;
+      --input-bg: #1a1a23;
+      --input-focus: #22222d;
+      --border: #262632;
+      --border-focus: #c0262d;
+      --accent: #c0262d;
+      --accent-hover: #dc2626;
+      --accent-glow: rgba(192, 38, 45, 0.35);
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --text-dim: #6b7280;
+      --success: #10b981;
+      --success-bg: rgba(16, 185, 129, 0.12);
+      --error: #ef4444;
+      --error-bg: rgba(239, 68, 68, 0.12);
+      --neutral: #9ca3af;
+      --neutral-bg: rgba(156, 163, 175, 0.12);
+      --warning: #f59e0b;
+      --radius-sm: 8px;
+      --radius: 12px;
+      --radius-lg: 16px;
+      --shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 24px 16px 60px;
+    }
+
+    /* Container */
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, var(--accent), #e11d48);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: 18px;
+      box-shadow: 0 4px 14px var(--accent-glow);
+    }
+
+    .brand-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      border-radius: inherit;
+    }
+
+    .brand-text h1 {
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .brand-badge {
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      background: rgba(192, 38, 45, 0.2);
+      color: #f87171;
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(192, 38, 45, 0.4);
+    }
+
+    .brand-version {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-dim);
+      font-family: inherit;
+      margin-left: 2px;
+      letter-spacing: 0.02em;
+    }
+
+    .brand-text p {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-ghost:hover {
+      background: var(--input-bg);
+      color: var(--text);
+      border-color: #3b3b4a;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .card-title {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      padding-bottom: 12px;
+    }
+
+    .card-title svg {
+      color: var(--accent);
+    }
+
+    /* Form Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+    }
+
+    .col-12 { grid-column: span 12; }
+    .col-8  { grid-column: span 8; }
+    .col-7  { grid-column: span 7; }
+    .col-6  { grid-column: span 6; }
+    .col-5  { grid-column: span 5; }
+    .col-4  { grid-column: span 4; }
+    .col-3  { grid-column: span 3; }
+
+    @media (max-width: 768px) {
+      .col-8, .col-7, .col-6, .col-5, .col-4, .col-3 {
+        grid-column: span 12;
+      }
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+      }
+      .header-actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+
+    /* Form Fields */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #d1d5db;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    label .req {
+      color: var(--accent);
+      margin-left: 4px;
+    }
+
+    label .hint {
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--text-dim);
+    }
+
+    input, select, textarea {
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      padding: 10px 14px;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    input::placeholder, textarea::placeholder {
+      color: #52525e;
+    }
+
+    select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    /* Autocomplete list */
+    .autocomplete-wrap {
+      position: relative;
+    }
+
+    .autocomplete-dropdown {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      background: #14141c;
+      border: 1px solid #333344;
+      border-radius: var(--radius-sm);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.7);
+      max-height: 250px;
+      overflow-y: auto;
+      z-index: 50;
+      display: none;
+    }
+
+    .autocomplete-dropdown.show {
+      display: block;
+    }
+
+    .dropdown-add-btn {
+      width: 100%;
+      background: rgba(192, 38, 45, 0.15);
+      color: #ff6b72;
+      border: none;
+      border-bottom: 1px solid #2d2025;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dropdown-add-btn:hover {
+      background: rgba(192, 38, 45, 0.3);
+      color: #fff;
+    }
+
+    .autocomplete-item {
+      padding: 9px 14px;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      transition: background 0.15s ease;
+    }
+
+    .autocomplete-item:hover {
+      background: var(--input-focus);
+    }
+
+    .artist-badge-img {
+      font-size: 11px;
+      color: #10b981;
+      background: rgba(16, 185, 129, 0.15);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    /* Динамический блок фото артистов */
+    .artist-photos-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 14px;
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-top: 4px;
+    }
+
+    .artist-photos-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Live Summary Card */
+    .score-preview-bar {
+      background: linear-gradient(145deg, #16161f, #1e1e29);
+      border: 1px solid #2a2a38;
+      border-radius: var(--radius);
+      padding: 18px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+      gap: 16px;
+    }
+
+    .score-stats {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .stat-val {
+      font-size: 22px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .stat-val.accent {
+      color: #f87171;
+    }
+
+    .cover-thumb-preview {
+      width: 64px;
+      height: 64px;
+      border-radius: 8px;
+      border: 1px solid #333344;
+      background: #0d0d12;
+      object-fit: cover;
+      display: none;
+    }
+
+    /* Tracklist */
+    .tracks-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .tracks-tools {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-tool {
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 6px 12px;
+      font-size: 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-tool:hover {
+      background: var(--input-bg);
+      color: #fff;
+      border-color: #3b3b4d;
+    }
+
+    .track-row {
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      margin-bottom: 10px;
+      display: grid;
+      grid-template-columns: 40px 3fr 1fr 1fr 1fr 1fr 100px 36px;
+      gap: 10px;
+      align-items: center;
+      transition: border-color 0.2s;
+    }
+
+    .track-row:hover {
+      border-color: #363646;
+    }
+
+    .track-num {
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--text-dim);
+      text-align: center;
+    }
+
+    .track-row input {
+      padding: 7px 10px;
+      font-size: 13px;
+    }
+
+    .track-score-badge {
+      font-size: 11px;
+      font-weight: 700;
+      background: #0e0e14;
+      border: 1px solid #2a2a38;
+      border-radius: 6px;
+      padding: 4px 6px;
+      text-align: center;
+      color: #e5e7eb;
+    }
+
+    .btn-del-track {
+      background: transparent;
+      border: none;
+      color: #ef4444;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.7;
+      transition: all 0.2s;
+    }
+
+    .btn-del-track:hover {
+      opacity: 1;
+      background: rgba(239, 68, 68, 0.15);
+    }
+
+    @media (max-width: 900px) {
+      .track-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        padding: 14px;
+      }
+      .track-num {
+        grid-column: span 2;
+        text-align: left;
+        color: var(--accent);
+      }
+      .track-row input[name="song_name"] {
+        grid-column: span 2;
+      }
+    }
+
+    /* Submit Section */
+    .submit-bar {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .buttons-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .btn-reset {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: var(--radius);
+      padding: 16px 24px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .btn-reset:hover {
+      background: var(--input-bg);
+      color: var(--text);
+      border-color: #3f3f52;
+    }
+
+    .btn-submit {
+      background: linear-gradient(135deg, var(--accent), #991b1b);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      padding: 16px 28px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 4px 20px var(--accent-glow);
+      transition: all 0.2s ease;
+      flex-grow: 1;
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      background: linear-gradient(135deg, #dc2626, #b91c1c);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 24px rgba(192, 38, 45, 0.5);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Status Alerts */
+    .alert {
+      padding: 14px 18px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 500;
+      display: none;
+      align-items: center;
+      gap: 12px;
+      line-height: 1.4;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .alert.success {
+      background: var(--success-bg);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #6ee7b7;
+    }
+
+    .alert.error {
+      background: var(--error-bg);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+
+    .alert.neutral {
+      background: var(--neutral-bg);
+      border: 1px solid rgba(156, 163, 175, 0.35);
+      color: #e5e7eb;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Modal for Key */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 16px;
+    }
+
+    .modal-card {
+      background: #14141b;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      max-width: 440px;
+      width: 100%;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+      animation: modalPop 0.25s ease;
+    }
+
+    @keyframes modalPop {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .modal-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    /* Spinner */
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+<script src="/_aistudio-iframe.js?v=1f94f900"></script></head>
+<body>
+
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="brand">
+        <div class="brand-logo">
+          <img src="logo.png" alt="oF">
+        </div>
+        <div class="brand-text">
+          <h1>
+            onFORM
+            <span class="brand-badge">ADMIN</span>
+            <span class="brand-version">v0.2.1</span>
+          </h1>
+          <p>Добавление релизов и треков в базу данных MUSICon</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button type="button" class="btn-ghost" id="btnSettings">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Ключ доступа
+        </button>
+        <button type="button" class="btn-ghost" id="btnRefreshArtists" title="Обновить список артистов из таблицы">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
+          Артисты (<span id="artistsCount">0</span>)
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Form -->
+    <form id="releaseForm" autocomplete="off">
+
+      <!-- Блок: Основная информация о релизе -->
+      <div class="card">
+        <h2 class="card-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          Основная информация о релизе
+        </h2>
+
+        <div class="grid">
+
+          <!-- Артист с автодополнением (поддержка нескольких через точку с запятой) -->
+          <div class="col-6 form-group">
+            <label for="artistInput">
+              <span>Артист <span class="req">*</span></span>
+              <span class="hint">Несколько артистов через точку с запятой (;)</span>
+            </label>
+            <div class="autocomplete-wrap">
+              <input type="text" id="artistInput" placeholder="Например: Скриптонит или Linkin Park; Jay-Z" required>
+              <div id="artistDropdown" class="autocomplete-dropdown"></div>
+            </div>
+          </div>
+
+          <!-- Название релиза -->
+          <div class="col-6 form-group">
+            <label for="releaseTitle">
+              <span>Название релиза <span class="req">*</span></span>
+            </label>
+            <input type="text" id="releaseTitle" placeholder="Например: WILD EA$T, 2004..." required>
+          </div>
+
+          <!-- Тип релиза -->
+          <div class="col-4 form-group">
+            <label for="releaseType">
+              <span>Тип релиза <span class="req">*</span></span>
+            </label>
+            <select id="releaseType" required>
+              <option value="альбом">альбом</option>
+              <option value="EP">EP (мини-альбом)</option>
+              <option value="сингл">сингл</option>
+              <option value="микстейп">микстейп</option>
+              <option value="сборник">сборник</option>
+            </select>
+          </div>
+
+          <!-- Количество треков -->
+          <div class="col-4 form-group">
+            <label for="trackCount">
+              <span>Количество треков <span class="req">*</span></span>
+            </label>
+            <input type="number" id="trackCount" min="1" max="100" value="10" required>
+          </div>
+
+          <!-- Система оценивания -->
+          <div class="col-4 form-group">
+            <label for="systemInput">
+              <span>Система оценивания</span>
+            </label>
+            <input type="text" id="systemInput" value="" placeholder="v3, v4...">
+          </div>
+
+          <!-- Оценка жюри 1 -->
+          <div class="col-4 form-group">
+            <label for="jury1Input">
+              <span>Оценка жюри 1 <span class="req">*</span></span>
+            </label>
+            <input type="number" step="0.01" id="jury1Input" placeholder="8.5" required>
+          </div>
+
+          <!-- Оценка жюри 2 -->
+          <div class="col-4 form-group">
+            <label for="jury2Input">
+              <span>Оценка жюри 2 <span class="req">*</span></span>
+            </label>
+            <input type="number" step="0.01" id="jury2Input" placeholder="9.0" required>
+          </div>
+
+          <!-- Максимальная шкала -->
+          <div class="col-4 form-group">
+            <label for="scaleInput">
+              <span>Максимальная шкала <span class="req">*</span></span>
+            </label>
+            <input type="number" id="scaleInput" value="10" min="1" required>
+          </div>
+
+          <!-- Даты -->
+          <div class="col-6 form-group">
+            <label for="evalDate">
+              <span>Дата оценки</span>
+            </label>
+            <input type="date" id="evalDate">
+          </div>
+
+          <div class="col-6 form-group">
+            <label for="releaseDate">
+              <span>Дата выхода релиза</span>
+            </label>
+            <input type="date" id="releaseDate">
+          </div>
+
+          <!-- Ссылки -->
+          <div class="col-12 form-group">
+            <label for="coverUrl">
+              <span>Ссылка на обложку (URL)</span>
+              <span class="hint">Прямая ссылка на изображение</span>
+            </label>
+            <input type="url" id="coverUrl" placeholder="https://.../cover.jpg">
+          </div>
+
+          <div class="col-6 form-group">
+            <label for="yandexUrl">
+              <span>Ссылка на Яндекс.Музыку</span>
+            </label>
+            <input type="url" id="yandexUrl" placeholder="https://music.yandex.ru/album/...">
+          </div>
+
+          <div class="col-6 form-group">
+            <label for="spotifyUrl">
+              <span>Ссылка на Spotify</span>
+            </label>
+            <input type="url" id="spotifyUrl" placeholder="https://open.spotify.com/album/...">
+          </div>
+
+          <!-- Динамический контейнер: Фото артистов (генерируется по артистам, разделенным ';') -->
+          <div class="col-12" id="artistImagesContainer" style="display:none;"></div>
+
+          <!-- Описание -->
+          <div class="col-12 form-group">
+            <label for="descInput">
+              <span>Описание релиза</span>
+            </label>
+            <textarea id="descInput" placeholder="Краткая рецензия, впечатления жюри, ключевые особенности..."></textarea>
+          </div>
+
+        </div>
+
+        <!-- Live Preview Карточка оценок -->
+        <div class="score-preview-bar">
+          <div class="score-stats">
+            <div class="stat-item">
+              <span class="stat-label">Средний балл</span>
+              <span class="stat-val accent" id="avgPreview">—</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">По шкале 1000</span>
+              <span class="stat-val" id="avg1000Preview">—</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Статус</span>
+              <span class="stat-val" style="font-size:16px; color:#10b981;" id="tierPreview">Готов к расчету</span>
+            </div>
+          </div>
+          <img id="coverThumbnail" class="cover-thumb-preview" alt="Превью обложки">
+        </div>
+      </div>
+
+      <!-- Блок: Динамический список треков -->
+      <div class="card">
+        <div class="tracks-header">
+          <h2 class="card-title" style="margin-bottom:0; border:none; padding:0;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg>
+            Список треков (<span id="tracksTotalCount">0</span>)
+          </h2>
+          <div class="tracks-tools">
+            <button type="button" class="btn-tool" id="btnCopyScores">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+              Оценки из релиза
+            </button>
+            <button type="button" class="btn-tool" id="btnCalcFromTracks">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Релиз по трекам
+            </button>
+            <button type="button" class="btn-tool" id="btnAddOneTrack">
+              + Добавить трек
+            </button>
+          </div>
+        </div>
+
+        <div id="tracksListContainer">
+          <!-- Треки генерируются динамически -->
+        </div>
+      </div>
+
+      <!-- Статус и Кнопки отправки / сброса -->
+      <div class="submit-bar">
+        <div id="alertSuccess" class="alert success">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <span id="successMsg">Релиз успешно добавлен в Google Таблицу!</span>
+        </div>
+
+        <div id="alertError" class="alert error">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+          <span id="errorMsg">Произошла ошибка</span>
+        </div>
+
+        <div id="alertNeutral" class="alert neutral">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <span id="neutralMsg">Форма очищена</span>
+        </div>
+
+        <div class="buttons-row">
+          <button type="button" class="btn-reset" id="btnResetForm">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            Сбросить форму
+          </button>
+          <button type="submit" class="btn-submit" id="btnSubmit">
+            <span id="btnText">Добавить в таблицу</span>
+            <div id="btnSpinner" class="spinner" style="display:none;"></div>
+          </button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Модальное окно: Авторизация по admin_key -->
+  <div id="authModal" class="modal-overlay" style="display:none;">
+    <div class="modal-card">
+      <h3 class="modal-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Авторизация onFORM
+      </h3>
+      <p class="modal-desc">Введите секретный admin_key для доступа к добавлению релизов. Ключ сохраняется локально в вашем браузере.</p>
+
+      <div class="form-group" style="margin-bottom: 8px;">
+        <label for="modalAdminKey">Ключ администратора (admin_key)</label>
+        <input type="password" id="modalAdminKey" placeholder="Введите ключ..." autocomplete="off">
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-ghost" id="modalLogoutBtn" style="display:none; color:#ef4444; border-color: rgba(239, 68, 68, 0.4);">Выйти</button>
+        <button type="button" class="btn-ghost" id="modalCloseBtn" style="display:none;">Отмена</button>
+        <button type="button" class="btn-submit" id="modalSaveBtn" style="width: auto; padding: 10px 22px;">
+          Сохранить и войти
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // Конфигурация: Встроенный URL Google Apps Script Web App
+    // =========================================================================
+    const API_URL = "https://script.google.com/macros/s/AKfycbx-eCuxFNWP3mQbrQZuxwKCvU9YFoS2YMdkNPedDm8W2GbdVN3WR-gsiczSlRW0ZmXh/exec";
+
+    // Состояние приложения (ключ НЕ захардкожен, берется исключительно из localStorage)
+    let state = {
+      adminKey: localStorage.getItem("musicon_admin_key") || "",
+      existingArtists: {},
+      tracks: []
+    };
+
+    // Таймер для автоматического скрытия тостов
+    let toastTimeout = null;
+
+    // DOM Elements
+    const authModal = document.getElementById("authModal");
+    const modalAdminKey = document.getElementById("modalAdminKey");
+    const modalSaveBtn = document.getElementById("modalSaveBtn");
+    const modalCloseBtn = document.getElementById("modalCloseBtn");
+    const modalLogoutBtn = document.getElementById("modalLogoutBtn");
+    const btnSettings = document.getElementById("btnSettings");
+    const btnRefreshArtists = document.getElementById("btnRefreshArtists");
+    const artistsCountEl = document.getElementById("artistsCount");
+
+    const artistInput = document.getElementById("artistInput");
+    const artistDropdown = document.getElementById("artistDropdown");
+    const artistImagesContainer = document.getElementById("artistImagesContainer");
+
+    const releaseTitle = document.getElementById("releaseTitle");
+    const releaseType = document.getElementById("releaseType");
+    const trackCount = document.getElementById("trackCount");
+    const systemInput = document.getElementById("systemInput");
+    const jury1Input = document.getElementById("jury1Input");
+    const jury2Input = document.getElementById("jury2Input");
+    const scaleInput = document.getElementById("scaleInput");
+    const evalDate = document.getElementById("evalDate");
+    const releaseDate = document.getElementById("releaseDate");
+    const coverUrl = document.getElementById("coverUrl");
+    const coverThumbnail = document.getElementById("coverThumbnail");
+    const yandexUrl = document.getElementById("yandexUrl");
+    const spotifyUrl = document.getElementById("spotifyUrl");
+    const descInput = document.getElementById("descInput");
+
+    const avgPreview = document.getElementById("avgPreview");
+    const avg1000Preview = document.getElementById("avg1000Preview");
+    const tierPreview = document.getElementById("tierPreview");
+
+    const tracksListContainer = document.getElementById("tracksListContainer");
+    const tracksTotalCount = document.getElementById("tracksTotalCount");
+    const btnCopyScores = document.getElementById("btnCopyScores");
+    const btnCalcFromTracks = document.getElementById("btnCalcFromTracks");
+    const btnAddOneTrack = document.getElementById("btnAddOneTrack");
+
+    const releaseForm = document.getElementById("releaseForm");
+    const btnResetForm = document.getElementById("btnResetForm");
+    const btnSubmit = document.getElementById("btnSubmit");
+    const btnText = document.getElementById("btnText");
+    const btnSpinner = document.getElementById("btnSpinner");
+    const alertSuccess = document.getElementById("alertSuccess");
+    const alertError = document.getElementById("alertError");
+    const alertNeutral = document.getElementById("alertNeutral");
+    const successMsg = document.getElementById("successMsg");
+    const errorMsg = document.getElementById("errorMsg");
+    const neutralMsg = document.getElementById("neutralMsg");
+
+    // =========================================================================
+    // Инициализация
+    // =========================================================================
+    function init() {
+      // Устанавливаем текущую дату оценки
+      const today = new Date().toISOString().split("T")[0];
+      evalDate.value = today;
+
+      // Проверка ключа: если ключа нет, блокируем экран модальным окном
+      if (!state.adminKey) {
+        showModal(true);
+      } else {
+        fetchArtists();
+        validateKey(state.adminKey).then(ok => {
+          if (!ok) {
+            state.adminKey = "";
+            localStorage.removeItem("musicon_admin_key");
+            showToast("error", "Ключ устарел. Введите новый.", 4000);
+            showModal(true);
+          }
+        });
+      }
+
+      // Генерация 10 треков по умолчанию для альбома
+      syncTrackInputs(parseInt(trackCount.value, 10) || 10);
+      recalcScores();
+    }
+
+    // =========================================================================
+    // Уведомления (Toasts) с авто-скрытием через setTimeout
+    // =========================================================================
+    function showToast(type, text, duration = 4000) {
+      if (toastTimeout) {
+        clearTimeout(toastTimeout);
+        toastTimeout = null;
+      }
+
+      // Скрываем все плашки перед показом новой
+      alertSuccess.style.display = "none";
+      alertError.style.display = "none";
+      alertNeutral.style.display = "none";
+
+      let targetAlert, targetMsg;
+      if (type === "success") {
+        targetAlert = alertSuccess;
+        targetMsg = successMsg;
+      } else if (type === "error") {
+        targetAlert = alertError;
+        targetMsg = errorMsg;
+      } else {
+        targetAlert = alertNeutral;
+        targetMsg = neutralMsg;
+      }
+
+      targetMsg.textContent = text;
+      targetAlert.style.display = "flex";
+      targetAlert.scrollIntoView({ behavior: "smooth", block: "nearest" });
+
+      // Автоматическое скрытие через duration мс
+      toastTimeout = setTimeout(() => {
+        targetAlert.style.display = "none";
+        toastTimeout = null;
+      }, duration);
+    }
+
+    function hideAllToasts() {
+      if (toastTimeout) {
+        clearTimeout(toastTimeout);
+        toastTimeout = null;
+      }
+      alertSuccess.style.display = "none";
+      alertError.style.display = "none";
+      alertNeutral.style.display = "none";
+    }
+
+    // =========================================================================
+    // Экран авторизации (admin_key)
+    // =========================================================================
+    function showModal(isInitial = false) {
+      modalAdminKey.value = isInitial ? "" : (state.adminKey || "");
+      modalCloseBtn.style.display = isInitial ? "none" : "block";
+      modalLogoutBtn.style.display = state.adminKey ? "block" : "none";
+      authModal.style.display = "flex";
+      modalAdminKey.focus();
+    }
+
+    function hideModal() {
+      if (!state.adminKey) return; // Нельзя закрыть без ключа
+      authModal.style.display = "none";
+    }
+
+    modalSaveBtn.addEventListener("click", async () => {
+      const key = modalAdminKey.value.trim();
+      if (!key) {
+        alert("Пожалуйста, введите admin_key!");
+        modalAdminKey.focus();
+        return;
+      }
+
+      const originalText = modalSaveBtn.textContent;
+      modalSaveBtn.disabled = true;
+      modalSaveBtn.textContent = "Проверка ключа...";
+
+      const isValid = await validateKey(key);
+
+      modalSaveBtn.disabled = false;
+      modalSaveBtn.textContent = originalText;
+
+      if (!isValid) {
+        alert("Неверный admin_key. Попробуйте ещё раз.");
+        modalAdminKey.value = "";
+        modalAdminKey.focus();
+        return;
+      }
+
+      state.adminKey = key;
+      localStorage.setItem("musicon_admin_key", key);
+      hideModal();
+      fetchArtists();
+      showToast("neutral", "Ключ администратора сохранён", 2000);
+    });
+
+    async function validateKey(key) {
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "verify", admin_key: key })
+        });
+        if (!res.ok) return false;
+        const data = await res.json();
+        return data && data.ok === true;
+      } catch (err) {
+        console.warn("validateKey error:", err);
+        return false;
+      }
+    }
+
+    modalLogoutBtn.addEventListener("click", () => {
+      if (confirm("Выйти и удалить ключ из браузера?")) {
+        state.adminKey = "";
+        localStorage.removeItem("musicon_admin_key");
+        modalAdminKey.value = "";
+        showModal(true);
+      }
+    });
+
+    modalCloseBtn.addEventListener("click", hideModal);
+    btnSettings.addEventListener("click", () => showModal(false));
+
+    // =========================================================================
+    // Загрузка артистов через doGet
+    // =========================================================================
+    async function fetchArtists() {
+      btnRefreshArtists.style.opacity = "0.5";
+      try {
+        const res = await fetch(API_URL, { method: "GET" });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.artists) {
+            state.existingArtists = data.artists;
+            artistsCountEl.textContent = Object.keys(data.artists).length;
+            renderDynamicArtistPhotoFields(); // перерисовать бейджи "Фото есть"
+          }
+        }
+      } catch (err) {
+        console.warn("Не удалось получить список артистов:", err);
+      } finally {
+        btnRefreshArtists.style.opacity = "1";
+      }
+    }
+
+    btnRefreshArtists.addEventListener("click", fetchArtists);
+
+    // =========================================================================
+    // Автодополнение Артиста
+    // =========================================================================
+    artistInput.addEventListener("input", () => {
+      onArtistSearch();
+      renderDynamicArtistPhotoFields();
+    });
+
+    artistInput.addEventListener("focus", onArtistSearch);
+
+    document.addEventListener("click", (e) => {
+      if (!artistInput.contains(e.target) && !artistDropdown.contains(e.target)) {
+        artistDropdown.classList.remove("show");
+      }
+    });
+
+    function getParsedArtistNames() {
+      return artistInput.value
+        .split(";")
+        .map(a => a.trim())
+        .filter(Boolean);
+    }
+
+    function onArtistSearch() {
+      const fullVal = artistInput.value;
+      // Если вводят через ';', подсказки даем для текущего сегмента
+      const parts = fullVal.split(";");
+      const currentSegment = (parts[parts.length - 1] || "").trim();
+      const cleanVal = currentSegment.toLowerCase();
+
+      artistDropdown.innerHTML = "";
+
+      // 1. Первый пункт ВСЕГДА кнопка "+ Добавить"
+      const addBtn = document.createElement("button");
+      addBtn.type = "button";
+      addBtn.className = "dropdown-add-btn";
+      addBtn.innerHTML = `
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        + Добавить "${currentSegment ? escapeHtml(currentSegment) : 'нового артиста'}"
+      `;
+      addBtn.addEventListener("click", () => {
+        artistDropdown.classList.remove("show");
+        renderDynamicArtistPhotoFields();
+      });
+      artistDropdown.appendChild(addBtn);
+
+      // 2. Список существующих артистов
+      const names = Object.keys(state.existingArtists);
+      const matches = names.filter(n => !cleanVal || n.toLowerCase().includes(cleanVal));
+
+      matches.slice(0, 15).forEach(name => {
+        const item = document.createElement("div");
+        item.className = "autocomplete-item";
+        const hasPhoto = Boolean(state.existingArtists[name]);
+        item.innerHTML = `
+          <span>${escapeHtml(name)}</span>
+          ${hasPhoto ? '<span class="artist-badge-img">Фото есть</span>' : ''}
+        `;
+        item.addEventListener("click", () => {
+          if (parts.length > 1) {
+            parts[parts.length - 1] = " " + name;
+            artistInput.value = parts.join(";");
+          } else {
+            artistInput.value = name;
+          }
+          artistDropdown.classList.remove("show");
+          renderDynamicArtistPhotoFields();
+        });
+        artistDropdown.appendChild(item);
+      });
+
+      artistDropdown.classList.add("show");
+    }
+
+    // =========================================================================
+    // Динамические поля для фото артистов (поддержка "Linkin Park; Jay-Z")
+    // =========================================================================
+    function renderDynamicArtistPhotoFields() {
+      const artists = getParsedArtistNames();
+
+      if (artists.length === 0) {
+        artistImagesContainer.innerHTML = "";
+        artistImagesContainer.style.display = "none";
+        return;
+      }
+
+      // Сохраняем уже введенные URL, чтобы они не стирались при допечатывании
+      const currentValues = {};
+      artistImagesContainer.querySelectorAll(".artist-photo-input").forEach(inp => {
+        const a = inp.getAttribute("data-artist");
+        if (a && inp.value) currentValues[a] = inp.value;
+      });
+
+      artistImagesContainer.innerHTML = "";
+      artistImagesContainer.style.display = "block";
+
+      const wrapper = document.createElement("div");
+      wrapper.className = "artist-photos-wrapper";
+
+      const title = document.createElement("div");
+      title.className = "artist-photos-title";
+      title.innerHTML = `
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+        URL фото для артистов релиза (${artists.length})
+      `;
+      wrapper.appendChild(title);
+
+      artists.forEach(artName => {
+        const group = document.createElement("div");
+        group.className = "form-group";
+
+        const hasPhoto = Boolean(state.existingArtists[artName]);
+        const existingVal = currentValues[artName] || "";
+
+        const label = document.createElement("label");
+        label.innerHTML = `
+          <span>URL фото для <strong>${escapeHtml(artName)}</strong> (если нужно)</span>
+          ${hasPhoto ? '<span class="artist-badge-img">Фото уже есть в базе</span>' : '<span class="hint">Новый артист</span>'}
+        `;
+
+        const input = document.createElement("input");
+        input.type = "url";
+        input.className = "artist-photo-input";
+        input.setAttribute("data-artist", artName);
+        input.placeholder = `https://.../photo_${encodeURIComponent(artName)}.jpg`;
+        input.value = existingVal;
+
+        group.appendChild(label);
+        group.appendChild(input);
+        wrapper.appendChild(group);
+      });
+
+      artistImagesContainer.appendChild(wrapper);
+    }
+
+    // =========================================================================
+    // Смена типа релиза -> Автоподстановка треков
+    // =========================================================================
+    releaseType.addEventListener("change", () => {
+      const type = releaseType.value;
+      if (type === "альбом" || type === "микстейп" || type === "сборник") {
+        trackCount.value = 10;
+      } else if (type === "EP") {
+        trackCount.value = 4;
+      } else if (type === "сингл") {
+        trackCount.value = 1;
+      }
+      syncTrackInputs(parseInt(trackCount.value, 10));
+    });
+
+    trackCount.addEventListener("input", () => {
+      const count = Math.max(1, parseInt(trackCount.value, 10) || 1);
+      syncTrackInputs(count);
+    });
+
+    // =========================================================================
+    // Превью обложки и расчет оценок
+    // =========================================================================
+    coverUrl.addEventListener("input", () => {
+      const url = coverUrl.value.trim();
+      if (url && (url.startsWith("http://") || url.startsWith("https://"))) {
+        coverThumbnail.src = url;
+        coverThumbnail.style.display = "block";
+      } else {
+        coverThumbnail.style.display = "none";
+      }
+    });
+
+    jury1Input.addEventListener("input", recalcScores);
+    jury2Input.addEventListener("input", recalcScores);
+    scaleInput.addEventListener("input", recalcScores);
+
+    function recalcScores() {
+      const j1 = parseFloat(jury1Input.value);
+      const j2 = parseFloat(jury2Input.value);
+      const scale = parseFloat(scaleInput.value) || 10;
+
+      if (!isNaN(j1) && !isNaN(j2)) {
+        const avg = (j1 + j2) / 2;
+        const avg1000 = scale > 0 ? (avg / scale) * 1000 : avg;
+
+        avgPreview.textContent = avg.toFixed(2);
+        avg1000Preview.textContent = avg1000.toFixed(1);
+
+        if (avg1000 >= 850) {
+          tierPreview.textContent = "Шедевр / Отлично";
+          tierPreview.style.color = "#10b981";
+        } else if (avg1000 >= 700) {
+          tierPreview.textContent = "Хороший релиз";
+          tierPreview.style.color = "#3b82f6";
+        } else if (avg1000 >= 500) {
+          tierPreview.textContent = "Средний уровень";
+          tierPreview.style.color = "#f59e0b";
+        } else {
+          tierPreview.textContent = "Ниже среднего";
+          tierPreview.style.color = "#ef4444";
+        }
+      } else {
+        avgPreview.textContent = "—";
+        avg1000Preview.textContent = "—";
+        tierPreview.textContent = "Ожидание оценок";
+        tierPreview.style.color = "var(--text-muted)";
+      }
+    }
+
+    // =========================================================================
+    // Динамический список треков
+    // =========================================================================
+    function syncTrackInputs(targetCount) {
+      const currentCount = state.tracks.length;
+
+      if (targetCount > currentCount) {
+        for (let i = currentCount; i < targetCount; i++) {
+          state.tracks.push({
+            track_number: i + 1,
+            song_name: "",
+            duration: "",
+            jury1: "",
+            jury2: "",
+            scale: scaleInput.value || 10
+          });
+        }
+      } else if (targetCount < currentCount) {
+        state.tracks = state.tracks.slice(0, targetCount);
+      }
+
+      renderTracksList();
+    }
+
+    function renderTracksList() {
+      tracksListContainer.innerHTML = "";
+      tracksTotalCount.textContent = state.tracks.length;
+
+      state.tracks.forEach((track, index) => {
+        const row = document.createElement("div");
+        row.className = "track-row";
+
+        const j1 = parseFloat(track.jury1);
+        const j2 = parseFloat(track.jury2);
+        const sc = parseFloat(track.scale) || 10;
+        let badgeHtml = "—";
+        if (!isNaN(j1) && !isNaN(j2)) {
+          const avg = (j1 + j2) / 2;
+          const avg1000 = sc > 0 ? (avg / sc) * 1000 : avg;
+          badgeHtml = `${avg.toFixed(1)} / ${avg1000.toFixed(0)}`;
+        }
+
+        row.innerHTML = `
+          <div class="track-num">#${index + 1}</div>
+          <input type="text" name="song_name" placeholder="Название трека" value="${escapeHtml(track.song_name || '')}">
+          <input type="text" name="duration" placeholder="03:45" value="${escapeHtml(track.duration || '')}">
+          <input type="number" step="0.01" name="jury1" placeholder="Жюри 1" value="${track.jury1 !== '' ? track.jury1 : ''}">
+          <input type="number" step="0.01" name="jury2" placeholder="Жюри 2" value="${track.jury2 !== '' ? track.jury2 : ''}">
+          <input type="number" name="scale" placeholder="Шкала" value="${track.scale || scaleInput.value || 10}">
+          <div class="track-score-badge" id="badgeTrack_${index}">${badgeHtml}</div>
+          <button type="button" class="btn-del-track" title="Удалить трек">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        `;
+
+        const songInput = row.querySelector('input[name="song_name"]');
+        const durInput = row.querySelector('input[name="duration"]');
+        const tJ1Input = row.querySelector('input[name="jury1"]');
+        const tJ2Input = row.querySelector('input[name="jury2"]');
+        const tScInput = row.querySelector('input[name="scale"]');
+        const delBtn = row.querySelector('.btn-del-track');
+
+        songInput.addEventListener("input", (e) => { track.song_name = e.target.value; });
+        durInput.addEventListener("input", (e) => { track.duration = e.target.value; });
+
+        const updateTrackBadge = () => {
+          track.jury1 = tJ1Input.value;
+          track.jury2 = tJ2Input.value;
+          track.scale = tScInput.value;
+
+          const v1 = parseFloat(track.jury1);
+          const v2 = parseFloat(track.jury2);
+          const vs = parseFloat(track.scale) || 10;
+          const badge = document.getElementById(`badgeTrack_${index}`);
+          if (!isNaN(v1) && !isNaN(v2)) {
+            const a = (v1 + v2) / 2;
+            const a1000 = vs > 0 ? (a / vs) * 1000 : a;
+            badge.textContent = `${a.toFixed(1)} / ${a1000.toFixed(0)}`;
+          } else {
+            badge.textContent = "—";
+          }
+        };
+
+        tJ1Input.addEventListener("input", updateTrackBadge);
+        tJ2Input.addEventListener("input", updateTrackBadge);
+        tScInput.addEventListener("input", updateTrackBadge);
+
+        delBtn.addEventListener("click", () => {
+          state.tracks.splice(index, 1);
+          trackCount.value = state.tracks.length;
+          renderTracksList();
+        });
+
+        tracksListContainer.appendChild(row);
+      });
+    }
+
+    btnAddOneTrack.addEventListener("click", () => {
+      const nextNum = state.tracks.length + 1;
+      state.tracks.push({
+        track_number: nextNum,
+        song_name: "",
+        duration: "",
+        jury1: jury1Input.value || "",
+        jury2: jury2Input.value || "",
+        scale: scaleInput.value || 10
+      });
+      trackCount.value = state.tracks.length;
+      renderTracksList();
+    });
+
+    btnCopyScores.addEventListener("click", () => {
+      const j1 = jury1Input.value;
+      const j2 = jury2Input.value;
+      const sc = scaleInput.value;
+
+      state.tracks.forEach(t => {
+        t.jury1 = j1;
+        t.jury2 = j2;
+        t.scale = sc;
+      });
+      renderTracksList();
+    });
+
+    btnCalcFromTracks.addEventListener("click", () => {
+      let sumJ1 = 0, sumJ2 = 0, count = 0;
+      state.tracks.forEach(t => {
+        const v1 = parseFloat(t.jury1);
+        const v2 = parseFloat(t.jury2);
+        if (!isNaN(v1) && !isNaN(v2)) {
+          sumJ1 += v1;
+          sumJ2 += v2;
+          count++;
+        }
+      });
+
+      if (count > 0) {
+        jury1Input.value = (sumJ1 / count).toFixed(2);
+        jury2Input.value = (sumJ2 / count).toFixed(2);
+        recalcScores();
+      } else {
+        alert("Заполните оценки хотя бы для одного трека!");
+      }
+    });
+
+    // =========================================================================
+    // Сброс всех полей формы к дефолтным значениям (Reset)
+    // =========================================================================
+    function resetFormFields(tracksCountToReset = 1) {
+      artistInput.value = "";
+      releaseTitle.value = "";
+      releaseType.value = "альбом";
+      trackCount.value = tracksCountToReset;
+      systemInput.value = "";
+      jury1Input.value = "";
+      jury2Input.value = "";
+      scaleInput.value = "10";
+      evalDate.value = new Date().toISOString().split("T")[0];
+      releaseDate.value = "";
+      coverUrl.value = "";
+      coverThumbnail.style.display = "none";
+      coverThumbnail.src = "";
+      yandexUrl.value = "";
+      spotifyUrl.value = "";
+      descInput.value = "";
+
+      // Очищаем динамические поля фото артистов
+      artistImagesContainer.innerHTML = "";
+      artistImagesContainer.style.display = "none";
+
+      // Сбрасываем треки в количестве tracksCountToReset (дефолт 1)
+      state.tracks = Array.from({ length: tracksCountToReset }, (_, i) => ({
+        track_number: i + 1,
+        song_name: "",
+        duration: "",
+        jury1: "",
+        jury2: "",
+        scale: "10"
+      }));
+
+      renderTracksList();
+      recalcScores();
+    }
+
+    // Кнопка "Сбросить форму"
+    btnResetForm.addEventListener("click", () => {
+      resetFormFields(1);
+      showToast("neutral", "Форма очищена", 2000);
+    });
+
+    // =========================================================================
+    // Отправка формы (POST-запрос)
+    // =========================================================================
+    releaseForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const artist = artistInput.value.trim();
+      const release = releaseTitle.value.trim();
+      const j1 = parseFloat(jury1Input.value);
+      const j2 = parseFloat(jury2Input.value);
+      const scale = parseFloat(scaleInput.value) || 10;
+
+      if (!artist || !release) {
+        showToast("error", "Пожалуйста, заполните Артиста и Название релиза");
+        return;
+      }
+
+      if (isNaN(j1) || isNaN(j2)) {
+        showToast("error", "Пожалуйста, введите оценки жюри 1 и жюри 2");
+        return;
+      }
+
+      if (!state.adminKey) {
+        showToast("error", "Отсутствует admin_key. Введите ключ для продолжения.");
+        showModal(true);
+        return;
+      }
+
+      // Собираем объект artist_images для всех артистов
+      const artistImages = {};
+      const photoInputs = artistImagesContainer.querySelectorAll(".artist-photo-input");
+      photoInputs.forEach(inp => {
+        const aName = inp.getAttribute("data-artist");
+        const aUrl = inp.value.trim();
+        if (aName && aUrl) {
+          artistImages[aName] = aUrl;
+        }
+      });
+
+      const parsedArtists = getParsedArtistNames();
+      const firstArtistImg = parsedArtists.length > 0 ? (artistImages[parsedArtists[0]] || "") : "";
+
+      const releasePayload = {
+        artist: artist,
+        release: release,
+        type: releaseType.value,
+        track_count: state.tracks.length || parseInt(trackCount.value, 10) || 1,
+        jury1: j1,
+        jury2: j2,
+        scale: scale,
+        system: systemInput.value.trim(),
+        date: evalDate.value,
+        release_date: releaseDate.value,
+        cover_url: coverUrl.value.trim(),
+        artist_image_url: firstArtistImg,
+        artist_images: artistImages,
+        description: descInput.value.trim(),
+        relise_url_yandex: yandexUrl.value.trim(),
+        relise_url_spotify: spotifyUrl.value.trim()
+      };
+
+      const tracksPayload = state.tracks.map((t, idx) => ({
+        artist: artist,
+        release: release,
+        track_number: idx + 1,
+        song_name: t.song_name.trim() || `Трек ${idx + 1}`,
+        duration: t.duration.trim(),
+        jury1: parseFloat(t.jury1) || j1,
+        jury2: parseFloat(t.jury2) || j2,
+        scale: parseFloat(t.scale) || scale,
+        system: systemInput.value.trim()
+      }));
+
+      const bodyData = {
+        admin_key: state.adminKey,
+        release: releasePayload,
+        tracks: tracksPayload,
+        artist_images: artistImages
+      };
+
+      setLoading(true);
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          },
+          body: JSON.stringify(bodyData)
+        });
+
+        const result = await response.json();
+
+        if (result && result.ok) {
+          showToast("success", `Успешно добавлено: "${artist} — ${release}" (${tracksPayload.length} треков)!`, 4000);
+          // Полная очистка всех полей к дефолтным значениям (1 трек)
+          resetFormFields(1);
+          fetchArtists();
+        } else {
+          if (result && result.error === "duplicate") {
+            showToast("error", result.message || "Релиз с таким названием уже есть у этого артиста", 4000);
+          } else if (result && result.error === "unauthorized") {
+            showToast("error", "Ошибка авторизации: неверный admin_key. Введите правильный ключ.", 4000);
+            showModal(false);
+          } else {
+            showToast("error", (result && result.message) || "Ошибка при сохранении в Google Таблицу", 4000);
+          }
+        }
+      } catch (err) {
+        console.error("Submission error:", err);
+        showToast("error", "Ошибка соединения с Google Apps Script. Проверьте сеть и права веб-приложения.", 4000);
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    function setLoading(isLoading) {
+      btnSubmit.disabled = isLoading;
+      btnResetForm.disabled = isLoading;
+      btnSpinner.style.display = isLoading ? "block" : "none";
+      btnText.textContent = isLoading ? "Отправка в Google Таблицу..." : "Добавить в таблицу";
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    // Запуск
+    init();
+  </script>
+</body>
+</html>
