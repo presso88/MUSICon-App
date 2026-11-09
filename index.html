@@ -223,11 +223,7 @@
     line-height: 1;
     letter-spacing: -.04em;
     font-variant-numeric: tabular-nums;
-    background: linear-gradient(135deg, #ffffff 40%, #fca5a5 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 2px 10px rgba(192,38,45,.4));
+    transition: color .2s ease;
   }
   .latest-score-box .score-label {
     font-size: 10px;
@@ -384,10 +380,7 @@
     font-weight: 800;
     font-variant-numeric: tabular-nums;
     letter-spacing: -.02em;
-    background: linear-gradient(135deg, #ffffff, #fca5a5);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    transition: color .2s ease;
   }
 
   .artists-card {
@@ -508,10 +501,7 @@
     font-weight: 800;
     font-variant-numeric: tabular-nums;
     letter-spacing: -.02em;
-    background: linear-gradient(135deg, #ffffff, #fca5a5);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    transition: color .2s ease;
   }
 
   /* ============================================================
@@ -864,10 +854,7 @@
     letter-spacing: -.04em;
     line-height: 1;
     font-variant-numeric: tabular-nums;
-    background: linear-gradient(135deg, #ffffff 40%, #fca5a5 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    transition: color .2s ease;
   }
   .release-hero-score-label {
     font-size: 9.5px;
@@ -1016,10 +1003,7 @@
     font-size: 14px;
     font-weight: 800;
     font-variant-numeric: tabular-nums;
-    background: linear-gradient(135deg, #ffffff, #fca5a5);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    transition: color .2s ease;
   }
 
   .status {
@@ -1099,7 +1083,7 @@
     *, *::before, *::after { animation: none !important; transition: none !important; }
   }
 </style>
-</head>
+<script src="/_aistudio-iframe.js?v=1f94f900"></script></head>
 
 <body>
 <div class="app">
@@ -1110,7 +1094,7 @@
         <img src="logo.png" alt="MUSICon" />
       </div>
       <div class="logo">MUSIC<span>on</span></div>
-      <div class="version">v0.6.0</div>
+      <div class="version">v0.6.1</div>
     </div>
   </header>
 
@@ -1265,6 +1249,20 @@
 
   const $  = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+
+  /* ============================================================
+     ЦВЕТА ОЦЕНОК
+     ============================================================ */
+  function getScoreColor(val) {
+    const n = Math.round(Number(val) || 0);
+    if (n >= 900) return "#00b7c4"; // 1000–900
+    if (n >= 800) return "#8B75D7"; // 800–899
+    if (n >= 650) return "#399B65"; // 650–799
+    if (n >= 500) return "#E5E5E5"; // 500–649
+    if (n >= 400) return "#D9BD79"; // 400–499
+    if (n >= 300) return "#B85B25"; // 300–399
+    return "#C8323E";              // 0–299
+  }
 
   /* ============================================================
      НАВИГАЦИОННЫЙ СТЕК
@@ -1835,6 +1833,8 @@
     }
     const trackLabel = r.track_count ? ` · ${r.track_count} ${plural(r.track_count, "трек", "трека", "треков")}` : "";
     const dateLabel = r.date ? "оценено " + formatDateRu(r.date) : "Недавно";
+    const scoreVal = Math.round(r.avg1000);
+    const scoreCol = getScoreColor(scoreVal);
 
     c.innerHTML = `
       <div class="latest-card"
@@ -1852,7 +1852,7 @@
             <div class="latest-meta">${escapeHtml(r.type || "Релиз")}${trackLabel}</div>
           </div>
           <div class="latest-score-box">
-            <div class="score">${Math.round(r.avg1000)}</div>
+            <div class="score" style="color:${scoreCol};filter:drop-shadow(0 2px 10px ${scoreCol}55);">${scoreVal}</div>
             <div class="score-label">Балл</div>
           </div>
         </div>
@@ -1868,6 +1868,8 @@
 
     list.innerHTML = allReleases.map(r => {
       const trackLabel = r.track_count ? ` · ${r.track_count} ${plural(r.track_count, "трек", "трека", "треков")}` : "";
+      const scoreVal = Math.round(r.avg1000);
+      const scoreCol = getScoreColor(scoreVal);
       return `
       <li class="release-item"
           data-release-artist="${escapeHtml(r.artist)}"
@@ -1880,7 +1882,7 @@
             · ${escapeHtml(r.type || "")}${trackLabel}
           </div>
         </div>
-        <div class="item-score">${Math.round(r.avg1000)}</div>
+        <div class="item-score" style="color:${scoreCol};">${scoreVal}</div>
       </li>
     `}).join("");
     hydrateCovers(list);
@@ -1915,6 +1917,8 @@
         ? `<img src="${escapeHtml(a.imageUrl)}" alt="" onerror="this.remove()">`
         : "";
       const badge = getTrackBadge(a.totalTracks);
+      const scoreVal = Math.round(a.avg);
+      const scoreCol = getScoreColor(scoreVal);
       return `
         <div class="artist-row rank-${rankNum}" data-artist="${escapeHtml(a.name)}">
           <span class="rank">${rankNum}</span>
@@ -1929,7 +1933,7 @@
             <div class="artist-name">${escapeHtml(a.name)}</div>
             <div class="artist-sub">${a.count} ${plural(a.count, "релиз", "релиза", "релизов")} · ${a.totalTracks} ${plural(a.totalTracks, "трек", "трека", "треков")}</div>
           </div>
-          <div class="artist-score">${Math.round(a.avg)}</div>
+          <div class="artist-score" style="color:${scoreCol};">${scoreVal}</div>
         </div>
       `;
     }).join("");
@@ -1968,9 +1972,16 @@
       ? `<div class="artist-links">${yandexBtn}${spotifyBtn}</div>`
       : "";
 
+    const onScoreVal = Math.round(stats.weightedAvg);
+    const onScoreCol = getScoreColor(onScoreVal);
+    const bestScoreVal = Math.round(stats.bestScore);
+    const bestScoreCol = getScoreColor(bestScoreVal);
+
     const internalTop = releases.map((r, i) => {
       const trackLabel = r.track_count ? ` · ${r.track_count} ${plural(r.track_count, "трек", "трека", "треков")}` : "";
       const dateLabel = r.date ? " · " + formatDateRu(r.date) : "";
+      const scoreVal = Math.round(r.avg1000);
+      const scoreCol = getScoreColor(scoreVal);
       return `
       <div class="internal-top-item"
            data-release-artist="${escapeHtml(r.artist)}"
@@ -1981,7 +1992,7 @@
           <div class="item-title">${escapeHtml(r.release)}</div>
           <div class="item-artist">${escapeHtml(r.type || "")}${trackLabel}${dateLabel}</div>
         </div>
-        <div class="item-score">${Math.round(r.avg1000)}</div>
+        <div class="item-score" style="color:${scoreCol};">${scoreVal}</div>
       </div>
     `}).join("");
 
@@ -1999,8 +2010,8 @@
           <span class="stat-chip rank-chip" data-rank-name="${escapeHtml(badge.name)}">${badge.emoji} ${badge.name}</span>
           <span class="stat-chip"><strong>${stats.count}</strong> ${plural(stats.count, "релиз", "релиза", "релизов")}</span>
           <span class="stat-chip"><strong>${stats.totalTracks}</strong> ${plural(stats.totalTracks, "трек", "трека", "треков")}</span>
-          <span class="stat-chip oscore-chip">балл onScore: <strong>${Math.round(stats.weightedAvg)}</strong><span class="info-icon">?</span></span>
-          <span class="stat-chip">Лучший релиз: <strong>${Math.round(stats.bestScore)}</strong></span>
+          <span class="stat-chip oscore-chip">балл onScore: <strong style="color:${onScoreCol};">${onScoreVal}</strong><span class="info-icon">?</span></span>
+          <span class="stat-chip">Лучший релиз: <strong style="color:${bestScoreCol};">${bestScoreVal}</strong></span>
         </div>
         ${artistLinksHTML}
       </div>
@@ -2056,6 +2067,8 @@
     } else {
       tracklistHTML = tracks.map(t => {
         const dur = t.duration ? `<span class="release-track-duration">${escapeHtml(t.duration)}</span>` : "";
+        const tScoreVal = Math.round(t.avg1000);
+        const tScoreCol = getScoreColor(tScoreVal);
         return `
           <div class="release-track">
             <span class="release-track-num">${t.track_number}</span>
@@ -2063,11 +2076,14 @@
               <div class="release-track-name">${escapeHtml(t.song_name || "")}</div>
               ${dur}
             </div>
-            <div class="release-track-score">${Math.round(t.avg1000)}</div>
+            <div class="release-track-score" style="color:${tScoreCol};">${tScoreVal}</div>
           </div>
         `;
       }).join("");
     }
+
+    const relScoreVal = Math.round(r.avg1000);
+    const relScoreCol = getScoreColor(relScoreVal);
 
     content.innerHTML = `
       <div class="release-hero">
@@ -2080,7 +2096,7 @@
           ${typeLine ? `<div class="release-hero-type">${escapeHtml(typeLine)}</div>` : ""}
         </div>
         <div class="release-hero-score">
-          <div class="release-hero-score-num">${Math.round(r.avg1000)}</div>
+          <div class="release-hero-score-num" style="color:${relScoreCol};filter:drop-shadow(0 2px 10px ${relScoreCol}55);">${relScoreVal}</div>
           <div class="release-hero-score-label">Балл</div>
         </div>
       </div>
