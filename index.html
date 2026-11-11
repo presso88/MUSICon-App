@@ -1094,7 +1094,7 @@
         <img src="logo.png" alt="MUSICon" />
       </div>
       <div class="logo">MUSIC<span>on</span></div>
-      <div class="version">v0.6.1</div>
+      <div class="version">v0.6.2</div>
     </div>
   </header>
 
@@ -1214,7 +1214,7 @@
 <script>
   const API_URL = "https://script.google.com/macros/s/AKfycbx-eCuxFNWP3mQbrQZuxwKCvU9YFoS2YMdkNPedDm8W2GbdVN3WR-gsiczSlRW0ZmXh/exec";
 
-  const COVER_CACHE_KEY = "musicon_covers_v8";
+  const COVER_CACHE_KEY = "musicon_covers_v9";
   const NEGATIVE_TTL_MS = 60 * 60 * 1000;
 
   const DEBUG = new URLSearchParams(location.search).has("debug");
@@ -1255,13 +1255,11 @@
      ============================================================ */
   function getScoreColor(val) {
     const n = Math.round(Number(val) || 0);
-    if (n >= 900) return "#00b7c4"; // 1000–900
+    if (n >= 900) return "#00b7c4"; // 900–1000
     if (n >= 800) return "#8B75D7"; // 800–899
-    if (n >= 650) return "#399B65"; // 650–799
-    if (n >= 500) return "#E5E5E5"; // 500–649
-    if (n >= 400) return "#D9BD79"; // 400–499
-    if (n >= 300) return "#B85B25"; // 300–399
-    return "#C8323E";              // 0–299
+    if (n >= 600) return "#399B65"; // 600–799
+    if (n >= 400) return "#B85B25"; // 400–599
+    return "#C8323E";              // 0–399
   }
 
   /* ============================================================
@@ -1614,7 +1612,7 @@
     try { localStorage.setItem(COVER_CACHE_KEY, JSON.stringify(coverCache)); } catch (e) {}
   }
   function makeKey(artist, album) {
-    return `${clean(artist)}:::${clean(album)}`;
+    return `${String(artist || "").trim().toLowerCase()}:::${String(album || "").trim().toLowerCase()}`;
   }
   function getCached(artist, album) {
     const key = makeKey(artist, album);
@@ -1679,6 +1677,7 @@
   }
 
   async function fetchCover(artist, album) {
+    return null;
     const cached = getCached(artist, album);
     if (cached !== undefined) return cached;
     let cover = await searchDiscogs(artist, album);
