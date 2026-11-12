@@ -1,2281 +1,309 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
-<meta name="theme-color" content="#08080a" />
-<title>MUSICon</title>
-<link rel="icon" type="image/png" href="favicon.png?v=3">
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+    <meta name="theme-color" content="#08080a"/>
+    <title>MUSICon</title>
+    <link rel="icon" type="image/png" href="assets/favicon.png?v=3">
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+          rel="stylesheet"/>
+    <link rel="stylesheet" href="css/style.css">
 
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --bg: #08080a;
-    --surface: #121217;
-    --surface-2: #1b1b22;
-    --stroke: rgba(255,255,255,.07);
-    --text: #f5f5f7;
-    --muted: #8e8e99;
-    --accent-1: #c0262d;
-    --accent-2: #80181d;
-    --accent-glow: rgba(192, 38, 45, .42);
-  }
-
-  html { -webkit-text-size-adjust: 100%; }
-
-  body {
-    min-height: 100dvh;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    -webkit-font-smoothing: antialiased;
-    -webkit-tap-highlight-color: transparent;
-    overflow-x: hidden;
-    padding-top: env(safe-area-inset-top);
-  }
-  body.locked { overflow: hidden; }
-
-  body::before, body::after {
-    content: "";
-    position: fixed;
-    border-radius: 50%;
-    filter: blur(100px);
-    pointer-events: none;
-    z-index: 0;
-    opacity: .35;
-  }
-  body::before {
-    width: 320px; height: 320px;
-    background: radial-gradient(circle, var(--accent-1), transparent 70%);
-    top: -100px; right: -80px;
-  }
-  body::after {
-    width: 280px; height: 280px;
-    background: radial-gradient(circle, #5b1317, transparent 70%);
-    top: 400px; left: -100px;
-  }
-
-  .app {
-    position: relative;
-    z-index: 1;
-    max-width: 480px;
-    margin: 0 auto;
-    padding: 0 16px calc(24px + env(safe-area-inset-bottom));
-  }
-
-  .app-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 18px 4px 22px;
-  }
-  .logo-wrap { display: flex; align-items: center; gap: 10px; }
-  .logo-badge {
-    width: 32px;
-    height: 32px;
-    border-radius: 6px;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    box-shadow: 0 4px 14px rgba(192,38,45,.4);
-    background: #121217;
-  }
-  .logo-badge img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-  .logo {
-    font-size: 20px;
-    font-weight: 800;
-    letter-spacing: -.03em;
-    color: #ffffff;
-  }
-  .logo span { color: #ef4444; }
-  .version {
-    font-size: 11px;
-    font-weight: 600;
-    color: #fca5a5;
-    background: rgba(192,38,45,.2);
-    border: 1px solid rgba(192,38,45,.35);
-    padding: 2px 7px;
-    border-radius: 20px;
-    letter-spacing: .02em;
-  }
-
-  .latest-card {
-    position: relative;
-    background: linear-gradient(165deg, rgba(27,27,34,.92) 0%, rgba(18,18,23,.96) 100%);
-    border: 1px solid var(--stroke);
-    border-radius: 22px;
-    padding: 18px;
-    box-shadow:
-      0 20px 40px -15px rgba(0,0,0,.7),
-      0 0 0 1px rgba(255,255,255,.04);
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform .15s ease;
-  }
-  .latest-card:active { transform: scale(.995); }
-  .latest-card::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at 85% 15%, var(--accent-glow), transparent 60%);
-    pointer-events: none;
-    opacity: .4;
-  }
-  .latest-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 14px;
-    position: relative;
-    z-index: 1;
-  }
-  .pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 10.5px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .08em;
-    color: #fda4af;
-    background: rgba(192,38,45,.22);
-    border: 1px solid rgba(192,38,45,.4);
-    padding: 4px 10px;
-    border-radius: 20px;
-  }
-  .pill::before {
-    content: "";
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: #ff4d58;
-    box-shadow: 0 0 8px #ff4d58;
-    animation: pulseDot 2s infinite;
-  }
-  @keyframes pulseDot {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: .4; transform: scale(.8); }
-  }
-  .latest-date {
-    font-size: 11.5px;
-    color: var(--muted);
-    font-weight: 500;
-  }
-  .latest-body {
-    display: flex;
-    gap: 14px;
-    align-items: center;
-    position: relative;
-    z-index: 1;
-  }
-  .latest-info { flex: 1; min-width: 0; }
-  .latest-title {
-    font-size: 17px;
-    font-weight: 700;
-    letter-spacing: -.02em;
-    line-height: 1.25;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .latest-artist {
-    font-size: 13px;
-    color: var(--muted);
-    margin-top: 4px;
-    line-height: 1.3;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .latest-meta {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 8px;
-    font-size: 11px;
-    font-weight: 600;
-    color: #d4d4d8;
-    background: rgba(255,255,255,.05);
-    border: 1px solid rgba(255,255,255,.07);
-    padding: 3px 8px;
-    border-radius: 6px;
-  }
-  .latest-score-box {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    justify-content: center;
-    flex-shrink: 0;
-    padding-left: 10px;
-  }
-  .latest-score-box .score {
-    font-size: 38px;
-    font-weight: 900;
-    line-height: 1;
-    letter-spacing: -.04em;
-    font-variant-numeric: tabular-nums;
-    transition: color .2s ease;
-  }
-  .latest-score-box .score-label {
-    font-size: 10px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: .06em;
-    color: var(--muted);
-    margin-top: 4px;
-  }
-
-  .artist-link {
-    display: inline-block;
-    cursor: pointer;
-    color: inherit;
-    text-decoration: underline;
-    text-underline-offset: 3px;
-    text-decoration-color: rgba(255,255,255,.2);
-    transition: color .15s ease, text-decoration-color .15s ease;
-  }
-  .artist-link:hover, .artist-link:active {
-    color: #ff6b72;
-    text-decoration-color: #ff6b72;
-  }
-  .artist-sep { color: var(--muted); }
-
-  .cover {
-    position: relative;
-    flex-shrink: 0;
-    border-radius: 12px;
-    overflow: hidden;
-    background: var(--surface-2);
-    border: 1px solid rgba(255,255,255,.08);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 8px 20px -6px rgba(0,0,0,.6);
-  }
-  .cover.xl { width: 96px; height: 96px; border-radius: 18px; }
-  .cover.large { width: 76px; height: 76px; border-radius: 14px; }
-  .cover.small { width: 44px; height: 44px; border-radius: 10px; }
-  .cover img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-  .cover-initial {
-    font-weight: 800;
-    color: rgba(255,255,255,.7);
-    user-select: none;
-  }
-  .cover.xl .cover-initial { font-size: 32px; }
-  .cover.large .cover-initial { font-size: 26px; }
-  .cover.small .cover-initial { font-size: 16px; }
-
-  .block { margin-top: 24px; }
-  .block-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
-    padding: 0 4px;
-  }
-  .block-title {
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: -.01em;
-    color: #e4e4e7;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .block-count {
-    font-size: 11.5px;
-    font-weight: 600;
-    color: var(--muted);
-    background: var(--surface);
-    border: 1px solid var(--stroke);
-    padding: 2px 7px;
-    border-radius: 12px;
-  }
-
-  .accordion-btn {
-    width: 100%;
-    background: var(--surface);
-    border: 1px solid var(--stroke);
-    border-radius: 16px;
-    padding: 14px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    color: var(--text);
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background .15s ease, border-color .15s ease;
-  }
-  .accordion-btn:hover { background: #17171e; }
-  .accordion-btn:active { transform: scale(.995); }
-  .accordion-btn .chevron {
-    width: 18px;
-    height: 18px;
-    transition: transform .25s ease;
-    opacity: .6;
-  }
-  .accordion-btn[aria-expanded="true"] .chevron {
-    transform: rotate(180deg);
-  }
-  .accordion-content {
-    display: none;
-    margin-top: 10px;
-  }
-  .accordion-content.open { display: block; }
-
-  .release-list {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .release-item {
-    background: var(--surface);
-    border: 1px solid var(--stroke);
-    border-radius: 14px;
-    padding: 10px 12px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    transition: background .15s ease;
-    cursor: pointer;
-  }
-  .release-item:hover { background: #17171e; }
-  .release-item:active { transform: scale(.995); }
-  .item-info { flex: 1; min-width: 0; }
-  .item-title {
-    font-size: 13.5px;
-    font-weight: 600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .item-artist {
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 2px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .item-score {
-    flex: 0 0 auto;
-    font-size: 15px;
-    font-weight: 800;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: -.02em;
-    transition: color .2s ease;
-  }
-
-  .artists-card {
-    background: var(--surface);
-    border: 1px solid var(--stroke);
-    border-radius: 18px;
-    padding: 6px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-  .artist-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 12px;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: background .15s ease, transform .15s ease;
-    user-select: none;
-  }
-  .artist-row:hover { background: #1a1a22; }
-  .artist-row:active { transform: scale(.99); }
-
-  .artist-row .rank {
-    width: 22px;
-    font-size: 13px;
-    font-weight: 800;
-    font-variant-numeric: tabular-nums;
-    text-align: center;
-  }
-  .artist-row.rank-1 .rank { color: #FFD700; text-shadow: 0 0 10px rgba(255,215,0,.45); }
-  .artist-row.rank-2 .rank { color: #C0C0C0; text-shadow: 0 0 8px rgba(192,192,192,.35); }
-  .artist-row.rank-3 .rank { color: #CD7F32; text-shadow: 0 0 8px rgba(205,127,50,.35); }
-  .artist-row.rank-4 .rank, .artist-row.rank-5 .rank { color: #565662; }
-
-  .avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    overflow: hidden;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,.1);
-    position: relative;
-  }
-  .avatar img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .avatar-wrap {
-    position: relative;
-    display: inline-flex;
-    flex-shrink: 0;
-    line-height: 0;
-  }
-  .avatar-badge {
-    position: absolute;
-    right: -4px;
-    bottom: -4px;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: #121217;
-    box-shadow: 0 0 0 2px var(--bg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    line-height: 1;
-    z-index: 3;
-    user-select: none;
-    -webkit-user-select: none;
-    pointer-events: none;
-  }
-
-  .artist-row.rank-1 .avatar {
-    box-shadow:
-      inset 0 0 0 1px rgba(255,255,255,.2),
-      0 0 0 2px rgba(255,215,0,.7),
-      0 0 16px rgba(255,215,0,.35);
-  }
-  .artist-row.rank-2 .avatar {
-    box-shadow:
-      inset 0 0 0 1px rgba(255,255,255,.16),
-      0 0 0 2px rgba(192,192,192,.7),
-      0 0 14px rgba(192,192,192,.25);
-  }
-  .artist-row.rank-3 .avatar {
-    box-shadow:
-      inset 0 0 0 1px rgba(255,255,255,.14),
-      0 0 0 2px rgba(205,127,50,.65),
-      0 0 14px rgba(205,127,50,.25);
-  }
-
-  .artist-info { flex: 1; min-width: 0; }
-  .artist-name {
-    font-size: 14px;
-    font-weight: 600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .artist-sub {
-    margin-top: 2px;
-    font-size: 11.5px;
-    color: var(--muted);
-  }
-  .artist-score {
-    flex: 0 0 auto;
-    font-size: 15px;
-    font-weight: 800;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: -.02em;
-    transition: color .2s ease;
-  }
-
-  /* ============================================================
-     ЛЕГЕНДА (отдельный блок)
-     ============================================================ */
-  .legend-card {
-    background: var(--surface);
-    border: 1px solid var(--stroke);
-    border-radius: 18px;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .legend-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .legend-rank {
-    padding: 12px 14px;
-    background: var(--surface-2);
-    border: 1px solid var(--stroke);
-    border-radius: 14px;
-  }
-  .legend-rank.current {
-    border-color: rgba(192, 38, 45, .65);
-    box-shadow: 0 0 0 1px rgba(192, 38, 45, .45), 0 0 20px -6px rgba(192, 38, 45, .5);
-    background: linear-gradient(180deg, rgba(192,38,45,.12), var(--surface-2));
-  }
-  .legend-rank-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 6px;
-  }
-  .legend-rank-emoji {
-    font-size: 20px;
-    line-height: 1;
-    flex-shrink: 0;
-  }
-  .legend-rank-name {
-    font-size: 13.5px;
-    font-weight: 700;
-    color: var(--text);
-  }
-  .legend-rank-desc {
-    font-size: 12px;
-    line-height: 1.5;
-    color: var(--muted);
-  }
-
-  /* ============================================================
-     МОДАЛКА ЛЕГЕНДЫ
-     ============================================================ */
-  .legend-modal {
-    position: fixed;
-    inset: 0;
-    z-index: 200;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transition: opacity .22s ease, visibility 0s .22s;
-  }
-  .legend-modal.open {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-    transition: opacity .22s ease, visibility 0s 0s;
-  }
-  .legend-backdrop {
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, .75);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-  }
-  .legend-panel {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    max-width: 440px;
-    max-height: calc(100dvh - 32px);
-    background: var(--surface);
-    border: 1px solid var(--stroke);
-    border-radius: 22px;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    transform: translateY(20px) scale(.98);
-    transition: transform .25s cubic-bezier(.16, 1, .3, 1);
-    box-shadow: 0 20px 60px -20px rgba(0,0,0,.9);
-  }
-  .legend-modal.open .legend-panel {
-    transform: translateY(0) scale(1);
-  }
-  .legend-panel-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 18px;
-    border-bottom: 1px solid var(--stroke);
-    flex-shrink: 0;
-  }
-  .legend-panel-title {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--text);
-  }
-  .legend-close-btn {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: var(--surface-2);
-    border: 1px solid var(--stroke);
-    color: var(--text);
-    font-size: 14px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: inherit;
-  }
-  .legend-close-btn:active { transform: scale(.95); }
-  .legend-panel-scroll {
-    padding: 14px;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  /* ============================================================
-     ЭКРАНЫ
-     ============================================================ */
-  .artist-view, .release-view {
-    position: fixed;
-    inset: 0;
-    background: var(--bg);
-    z-index: 100;
-    display: flex;
-    flex-direction: column;
-    transform: translateY(100%);
-    transition: transform .32s cubic-bezier(.16, 1, .3, 1);
-    overflow: hidden;
-  }
-  .release-view { z-index: 110; }
-  .artist-view.open, .release-view.open { transform: translateY(0); }
-
-  .artist-view::before {
-    content: "";
-    position: absolute;
-    width: 380px; height: 380px;
-    border-radius: 50%;
-    background: radial-gradient(circle, var(--artist-glow, var(--accent-glow)), transparent 70%);
-    top: -120px; left: 50%;
-    transform: translateX(-50%);
-    filter: blur(80px);
-    opacity: .5;
-    pointer-events: none;
-  }
-
-  .artist-view-header, .release-view-header {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: calc(14px + env(safe-area-inset-top)) 16px 14px;
-    border-bottom: 1px solid var(--stroke);
-    background: rgba(8,8,10,.8);
-    backdrop-filter: blur(16px);
-  }
-  .back-btn {
-    background: var(--surface);
-    border: 1px solid var(--stroke);
-    color: var(--text);
-    padding: 8px 14px;
-    border-radius: 10px;
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .back-btn:active { transform: scale(.97); }
-  .artist-view-scroll, .release-view-scroll {
-    flex: 1;
-    overflow-y: auto;
-    padding: 24px 16px calc(30px + env(safe-area-inset-bottom));
-    position: relative;
-    z-index: 1;
-    max-width: 480px;
-    width: 100%;
-    margin: 0 auto;
-  }
-
-  .artist-hero {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding-bottom: 24px;
-    border-bottom: 1px solid var(--stroke);
-  }
-  .artist-hero .avatar {
-    width: 96px;
-    height: 96px;
-    box-shadow:
-      0 12px 30px -8px rgba(0,0,0,.8),
-      inset 0 0 0 2px rgba(255,255,255,.15);
-  }
-  .artist-hero .avatar .cover-initial { font-size: 38px; }
-  .artist-hero .avatar-badge {
-    width: 30px;
-    height: 30px;
-    right: -6px;
-    bottom: -6px;
-    font-size: 16px;
-    box-shadow: 0 0 0 3px var(--bg);
-  }
-
-  .artist-hero-name {
-    font-size: 24px;
-    font-weight: 800;
-    letter-spacing: -.03em;
-    margin-top: 14px;
-  }
-  .artist-hero-stats {
-    display: flex;
-    gap: 8px;
-    margin-top: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  .stat-chip {
-    font-size: 12px;
-    font-weight: 600;
-    color: #e4e4e7;
-    background: var(--surface);
-    border: 1px solid var(--stroke);
-    padding: 5px 12px;
-    border-radius: 20px;
-  }
-  .stat-chip strong { color: #fff; font-weight: 800; }
-  .stat-chip.rank-chip {
-    background: rgba(192,38,45,.15);
-    border-color: rgba(192,38,45,.35);
-    color: #fca5a5;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background .15s ease, transform .15s ease;
-  }
-  .stat-chip.rank-chip:active {
-    background: rgba(192,38,45,.28);
-    transform: scale(.96);
-  }
-
-  /* Ссылки на артиста в стримингах (отдельными равными столбцами по форме как на релизах) */
-  .artist-links {
-    display: flex;
-    gap: 8px;
-    margin-top: 16px;
-    width: 100%;
-  }
-
-  .internal-top-title {
-    font-size: 13px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .08em;
-    color: var(--muted);
-    margin: 20px 4px 10px;
-  }
-  .internal-top {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .internal-top-item {
-    background: var(--surface);
-    border: 1px solid var(--stroke);
-    border-radius: 14px;
-    padding: 10px 12px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    cursor: pointer;
-    transition: background .15s ease;
-  }
-  .internal-top-item:hover { background: #17171e; }
-  .internal-top-item .rank {
-    width: 20px;
-    font-size: 13px;
-    font-weight: 800;
-    color: var(--muted);
-    text-align: center;
-  }
-  .internal-top-item:nth-child(1) .rank { color: #FFD700; }
-  .internal-top-item:nth-child(2) .rank { color: #C0C0C0; }
-  .internal-top-item:nth-child(3) .rank { color: #CD7F32; }
-
-  /* ЭКРАН РЕЛИЗА */
-  .release-hero {
-    display: flex;
-    gap: 14px;
-    align-items: center;
-    padding-bottom: 18px;
-    border-bottom: 1px solid var(--stroke);
-  }
-  .release-hero-cover { flex-shrink: 0; }
-  .release-hero-info { flex: 1; min-width: 0; }
-  .release-hero-title {
-    font-size: 20px;
-    font-weight: 800;
-    letter-spacing: -.02em;
-    line-height: 1.2;
-    margin-bottom: 6px;
-  }
-  .release-hero-artists {
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.3;
-    margin-bottom: 6px;
-  }
-  .release-hero-type {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--muted);
-    background: rgba(255,255,255,.05);
-    border: 1px solid var(--stroke);
-    padding: 3px 8px;
-    border-radius: 6px;
-    display: inline-block;
-  }
-  .release-hero-score {
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-left: 8px;
-  }
-  .release-hero-score-num {
-    font-size: 32px;
-    font-weight: 900;
-    letter-spacing: -.04em;
-    line-height: 1;
-    font-variant-numeric: tabular-nums;
-    transition: color .2s ease;
-  }
-  .release-hero-score-label {
-    font-size: 9.5px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: .06em;
-    color: var(--muted);
-    margin-top: 4px;
-  }
-
-  /* Ссылки на стриминги (плашки в виде отдельных равных столбцов) */
-  .release-links {
-    display: flex;
-    gap: 8px;
-    margin-top: 16px;
-    width: 100%;
-  }
-  .release-link-btn {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 6px;
-    padding: 8px 12px;
-    background: var(--surface);
-    border: 1px solid var(--stroke);
-    border-radius: 10px;
-    flex: 1;
-    min-width: 0;
-    font-size: 12.5px;
-    font-weight: 600;
-    color: var(--text);
-    text-decoration: none;
-    cursor: pointer;
-    transition: background .15s ease, border-color .15s ease, transform .15s ease;
-  }
-  .release-link-btn:hover {
-    background: #17171e;
-    border-color: rgba(255,255,255,.14);
-    color: var(--text);
-  }
-  .release-link-btn:active {
-    transform: scale(.985);
-  }
-  .release-link-text {
-    line-height: 1.3;
-  }
-  .release-link-arrow {
-    font-size: 13px;
-    color: var(--muted);
-    flex-shrink: 0;
-    line-height: 1;
-    transition: color .15s ease;
-  }
-  .release-link-btn:hover .release-link-arrow {
-    color: var(--text);
-  }
-
-  .release-dates {
-    display: flex;
-    gap: 8px;
-    margin-top: 16px;
-    flex-wrap: wrap;
-  }
-  .release-date-item {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    padding: 8px 12px;
-    background: var(--surface);
-    border: 1px solid var(--stroke);
-    border-radius: 10px;
-    flex: 1;
-    min-width: 130px;
-  }
-  .release-date-label {
-    font-size: 10px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: .06em;
-    color: var(--muted);
-  }
-  .release-date-value {
-    font-size: 12.5px;
-    font-weight: 600;
-    color: var(--text);
-  }
-
-  .release-description {
-    margin-top: 16px;
-    padding: 12px 14px;
-    background: var(--surface);
-    border: 1px solid var(--stroke);
-    border-radius: 12px;
-    font-size: 12.5px;
-    line-height: 1.5;
-    color: #d4d4d8;
-    white-space: pre-wrap;
-  }
-
-  .release-tracklist-title {
-    font-size: 13px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .08em;
-    color: var(--muted);
-    margin: 20px 4px 10px;
-  }
-  .release-tracklist {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .release-track {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 12px;
-    background: var(--surface);
-    border: 1px solid var(--stroke);
-    border-radius: 12px;
-  }
-  .release-track-num {
-    width: 22px;
-    text-align: center;
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--muted);
-    font-variant-numeric: tabular-nums;
-  }
-  .release-track-info { flex: 1; min-width: 0; }
-  .release-track-name {
-    font-size: 13px;
-    font-weight: 600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .release-track-duration {
-    font-size: 11px;
-    color: var(--muted);
-    margin-top: 2px;
-    display: block;
-  }
-  .release-track-score {
-    flex-shrink: 0;
-    font-size: 14px;
-    font-weight: 800;
-    font-variant-numeric: tabular-nums;
-    transition: color .2s ease;
-  }
-
-  .status {
-    padding: 36px 16px;
-    text-align: center;
-    color: var(--muted);
-    font-size: 13px;
-  }
-  .error-block {
-    background: rgba(192,38,45,.12);
-    border: 1px solid rgba(192,38,45,.3);
-    color: #fca5a5;
-    padding: 14px 16px;
-    border-radius: 14px;
-    font-size: 12.5px;
-    line-height: 1.4;
-    text-align: center;
-    margin: 12px 0;
-  }
-
-  .debug-panel {
-    display: none;
-    margin-top: 16px;
-    background: #000;
-    border: 1px solid #333;
-    border-radius: 8px;
-    padding: 10px;
-    font-family: monospace;
-    font-size: 10.5px;
-    color: #999;
-    max-height: 180px;
-    overflow-y: auto;
-    white-space: pre-wrap;
-  }
-  .debug-panel.visible { display: block; }
-  .debug-panel .ok { color: #4ade80; }
-  .debug-panel .fail { color: #f87171; }
-
-  /* onScore — кликабельная плашка со справкой */
-  .stat-chip.oscore-chip {
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    transition: background .15s ease, transform .15s ease;
-  }
-  .stat-chip.oscore-chip:active {
-    background: #1a1a22;
-    transform: scale(.96);
-  }
-  .info-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
-    background: rgba(255,255,255,.12);
-    color: var(--muted);
-    font-size: 10px;
-    font-weight: 800;
-    line-height: 1;
-    flex-shrink: 0;
-  }
-
-  /* Модалка onScore */
-  .oscore-text p {
-    margin: 0 0 10px;
-    font-size: 12.5px;
-    line-height: 1.55;
-    color: #d4d4d8;
-  }
-  .oscore-text p:last-child { margin-bottom: 0; }
-  .oscore-text strong { color: var(--text); font-weight: 700; }
-
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { animation: none !important; transition: none !important; }
-  }
-</style>
-<script src="/_aistudio-iframe.js?v=1f94f900"></script></head>
+</head>
 
 <body>
 <div class="app">
 
-  <header class="app-header">
-    <div class="logo-wrap">
-      <div class="logo-badge">
-        <img src="logo.png" alt="MUSICon" />
-      </div>
-      <div class="logo">MUSIC<span>on</span></div>
-      <div class="version">v0.6.2</div>
-    </div>
-  </header>
+    <header class="app-header">
+        <div class="logo-wrap">
+            <div class="logo-badge">
+                <img src="assets/logo.png" alt="MUSICon"/>
+            </div>
+            <div class="logo">MUSIC<span>on</span></div>
+            <div class="version">v0.7.5</div>
+        </div>
+    </header>
 
-  <!-- 1. Свежая оценка -->
-  <div id="latestContainer">
-    <div class="status">Загрузка свежей оценки…</div>
-  </div>
-
-  <!-- 2. Топ артистов -->
-  <section class="block">
-    <div class="block-header">
-      <h2 class="block-title">
-        Топ артистов
-        <span class="block-count">ТОП-5</span>
-      </h2>
+    <div id="latestContainer">
+        <div class="status">Загрузка свежей оценки…</div>
     </div>
-    <div class="artists-card" id="artistsCard">
-      <div class="status">Загрузка артистов…</div>
-    </div>
-  </section>
 
-  <!-- 3. Уровни артистов (аккордеон) -->
-  <section class="block">
-    <button class="accordion-btn" id="legendAccBtn" aria-expanded="false" aria-controls="legendAccContent">
-      <span class="label">Уровни артистов</span>
-      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="6 9 12 15 18 9"></polyline>
-      </svg>
-    </button>
-    <div class="accordion-content" id="legendAccContent">
-      <div class="legend-card" id="legendCard"></div>
-    </div>
-  </section>
+    <section class="block">
+        <button class="catalog-btn" id="openCatalogBtn" type="button">
+            <span class="catalog-btn-title">Все оценки</span>
+            <div class="catalog-btn-meta">
+                <span class="catalog-btn-count" id="catalogBtnCount">…</span>
+                <svg class="chevron-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </div>
+        </button>
+    </section>
 
-  <!-- 4. Все оценки -->
-  <section class="block">
-    <button class="accordion-btn" id="accBtn" aria-expanded="false">
-      <span class="label">Все оценки <span class="count" id="allCount">…</span></span>
-      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="6 9 12 15 18 9"></polyline>
-      </svg>
-    </button>
-    <div class="accordion-content" id="accContent">
-      <ul class="release-list" id="releaseList"></ul>
-    </div>
-  </section>
+    <section class="block">
+        <div class="block-header">
+            <h2 class="block-title">
+                Топ артистов
+                <span class="block-count">ТОП-5</span>
+            </h2>
+        </div>
+        <div class="artists-card" id="artistsCard">
+            <div class="status">Загрузка артистов…</div>
+        </div>
+    </section>
 
+    <section class="block">
+        <button class="accordion-btn" id="legendAccBtn" aria-expanded="false" aria-controls="legendAccContent">
+            <span class="label">Уровни артистов</span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                 stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        </button>
+        <div class="accordion-content" id="legendAccContent">
+            <div class="legend-card" id="legendCard"></div>
+        </div>
+    </section>
+
+</div>
+
+<!-- ЭКРАН КАТАЛОГА (ВСЕ ОЦЕНКИ) -->
+<div class="catalog-view" id="catalogView" aria-hidden="true">
+    <div class="catalog-view-header">
+        <button class="back-btn" id="catalogBackBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                 stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Назад
+        </button>
+        <div class="catalog-header-title">Все оценки</div>
+        <div style="width:60px"></div>
+    </div>
+
+    <div class="catalog-toolbar">
+        <div class="catalog-search-wrap">
+            <div class="catalog-search-input-box">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" id="catalogSearchInput" class="catalog-search-input"
+                       placeholder="Поиск по артисту или релизу…" autocomplete="off" spellcheck="false"/>
+                <button type="button" class="search-clear-btn" id="searchClearBtn" aria-label="Очистить поиск"
+                        style="display:none;">×
+                </button>
+            </div>
+            <button type="button" class="params-btn" id="openParamsBtn" aria-label="Параметры и фильтры">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="4" y1="21" x2="4" y2="14"></line>
+                    <line x1="4" y1="10" x2="4" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12" y2="3"></line>
+                    <line x1="20" y1="21" x2="20" y2="16"></line>
+                    <line x1="20" y1="12" x2="20" y2="3"></line>
+                    <line x1="1" y1="14" x2="7" y2="14"></line>
+                    <line x1="9" y1="8" x2="15" y2="8"></line>
+                    <line x1="17" y1="16" x2="23" y2="16"></line>
+                </svg>
+                <span class="params-badge-dot" id="paramsBadgeDot" style="display:none;"></span>
+            </button>
+        </div>
+
+        <div class="catalog-status" id="catalogStatus" style="display:none;">
+            <span id="catalogStatusText">Найдено 0 из 0</span>
+            <span class="status-sep">·</span>
+            <button type="button" class="status-reset-link" id="catalogResetBtn">Сбросить всё</button>
+        </div>
+    </div>
+
+    <div class="catalog-view-scroll" id="catalogViewScroll">
+        <ul class="catalog-release-list" id="catalogReleaseList"></ul>
+        <div class="empty-state" id="catalogEmptyState" style="display:none;">
+            <div class="empty-icon">🔍</div>
+            <div class="empty-title">Ничего не найдено</div>
+            <div class="empty-sub">Попробуйте изменить запрос или сбросить фильтры</div>
+            <button type="button" class="empty-reset-btn" id="emptyResetBtn">Сбросить всё</button>
+        </div>
+    </div>
+</div>
+
+<!-- ЭКРАН ПАРАМЕТРОВ (ФИЛЬТРЫ И СОРТИРОВКА) -->
+<div class="catalog-params-view" id="catalogParamsView" aria-hidden="true">
+    <div class="catalog-params-header">
+        <button class="back-btn" id="paramsBackBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                 stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Назад
+        </button>
+        <div class="params-header-center">
+            <div class="params-header-title">Параметры</div>
+            <div class="params-live-counter" id="paramsLiveCounter">…</div>
+        </div>
+        <div style="width:60px"></div>
+    </div>
+
+    <div class="catalog-params-scroll" id="catalogParamsScroll">
+        <div class="param-section">
+            <div class="param-section-title">Сортировка</div>
+            <div class="param-radio-group">
+                <label class="param-radio">
+                    <input type="radio" name="catalogSort" value="newest" checked/>
+                    <span class="param-radio-indicator"></span>
+                    <span class="param-radio-label">Новые сверху (по дате оценки)</span>
+                </label>
+                <label class="param-radio">
+                    <input type="radio" name="catalogSort" value="oldest"/>
+                    <span class="param-radio-indicator"></span>
+                    <span class="param-radio-label">Старые сверху</span>
+                </label>
+                <label class="param-radio">
+                    <input type="radio" name="catalogSort" value="score_desc"/>
+                    <span class="param-radio-indicator"></span>
+                    <span class="param-radio-label">По баллу: высокие сверху</span>
+                </label>
+                <label class="param-radio">
+                    <input type="radio" name="catalogSort" value="score_asc"/>
+                    <span class="param-radio-indicator"></span>
+                    <span class="param-radio-label">По баллу: низкие сверху</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="param-section">
+            <div class="param-section-title">Тип релиза</div>
+            <div class="param-chips-wrap" id="paramTypeChips"></div>
+        </div>
+
+        <div class="param-section">
+            <div class="param-section-title">Год и месяц оценки</div>
+            <div class="param-chips-wrap" id="paramYearChips"></div>
+            <div class="param-month-container" id="paramMonthContainer" style="display:none;">
+                <div class="param-subsection-title">Месяцы</div>
+                <div class="param-chips-wrap" id="paramMonthChips"></div>
+            </div>
+        </div>
+
+        <div class="param-section">
+            <div class="param-section-title">Диапазон баллов</div>
+            <div class="param-chips-wrap" id="paramScorePresetChips">
+                <button type="button" class="param-chip" data-preset="0-399">0 – 399</button>
+                <button type="button" class="param-chip" data-preset="400-649">400 – 649</button>
+                <button type="button" class="param-chip" data-preset="650-799">650 – 799</button>
+                <button type="button" class="param-chip" data-preset="800-899">800 – 899</button>
+                <button type="button" class="param-chip" data-preset="900-1000">900 – 1000</button>
+            </div>
+            <div class="param-custom-range-box">
+                <div class="param-custom-range-title">Свой диапазон</div>
+                <div class="param-custom-inputs">
+                    <div class="param-input-col">
+                        <span class="param-input-label">От</span>
+                        <input type="number" id="customScoreMin" class="param-number-input" placeholder="0" min="0"
+                               max="1000"/>
+                    </div>
+                    <div class="param-input-col">
+                        <span class="param-input-label">До</span>
+                        <input type="number" id="customScoreMax" class="param-number-input" placeholder="1000" min="0"
+                               max="1000"/>
+                    </div>
+                    <button type="button" class="param-range-clear-btn" id="customRangeClearBtn"
+                            aria-label="Сбросить диапазон" style="display:none;">×
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="param-footer" style="display: flex; gap: 10px;">
+        <button type="button" class="param-apply-btn" id="paramsApplyBtn" style="flex: 2;">Готово</button>
+        <button type="button" class="param-reset-all-btn" id="paramsResetBtn" style="flex: 1;">Сбросить</button>
+    </div>
 </div>
 
 <!-- ЭКРАН АРТИСТА -->
 <div class="artist-view" id="artistView" aria-hidden="true">
-  <div class="artist-view-header">
-    <button class="back-btn" id="backBtn">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="19" y1="12" x2="5" y2="12"></line>
-        <polyline points="12 19 5 12 12 5"></polyline>
-      </svg>
-      Назад
-    </button>
-    <div style="font-size:12px;font-weight:600;color:var(--muted)">Дискография</div>
-    <div style="width:60px"></div>
-  </div>
-  <div class="artist-view-scroll" id="artistViewContent"></div>
+    <div class="artist-view-header">
+        <button class="back-btn" id="backBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                 stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Назад
+        </button>
+        <div style="font-size:12px;font-weight:600;color:var(--muted)">Дискография</div>
+        <div style="width:60px"></div>
+    </div>
+    <div class="artist-view-scroll" id="artistViewContent"></div>
 </div>
 
 <!-- ЭКРАН РЕЛИЗА -->
 <div class="release-view" id="releaseView" aria-hidden="true">
-  <div class="release-view-header">
-    <button class="back-btn" id="releaseBackBtn">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="19" y1="12" x2="5" y2="12"></line>
-        <polyline points="12 19 5 12 12 5"></polyline>
-      </svg>
-      Назад
-    </button>
-    <div style="font-size:12px;font-weight:600;color:var(--muted)">Релиз</div>
-    <div style="width:60px"></div>
-  </div>
-  <div class="release-view-scroll" id="releaseViewContent"></div>
+    <div class="release-view-header">
+        <button class="back-btn" id="releaseBackBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                 stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Назад
+        </button>
+        <div style="font-size:12px;font-weight:600;color:var(--muted)">Релиз</div>
+        <div style="width:60px"></div>
+    </div>
+    <div class="release-view-scroll" id="releaseViewContent"></div>
 </div>
 
 <!-- МОДАЛКА ЛЕГЕНДЫ -->
 <div class="legend-modal" id="legendModal" aria-hidden="true">
-  <div class="legend-backdrop" id="legendBackdrop"></div>
-  <div class="legend-panel">
-    <div class="legend-panel-header">
-      <h2 class="legend-panel-title">Уровни артистов</h2>
-      <button class="legend-close-btn" id="legendCloseBtn" aria-label="Закрыть">✕</button>
+    <div class="legend-backdrop" id="legendBackdrop"></div>
+    <div class="legend-panel">
+        <div class="legend-panel-header">
+            <h2 class="legend-panel-title">Уровни артистов</h2>
+            <button class="legend-close-btn" id="legendCloseBtn" aria-label="Закрыть">✕</button>
+        </div>
+        <div class="legend-panel-scroll">
+            <div class="legend-list" id="legendModalContent"></div>
+        </div>
     </div>
-    <div class="legend-panel-scroll">
-      <div class="legend-list" id="legendModalContent"></div>
-    </div>
-  </div>
 </div>
 
 <!-- МОДАЛКА ONSCORE -->
 <div class="legend-modal" id="oscoreModal" aria-hidden="true">
-  <div class="legend-backdrop" id="oscoreBackdrop"></div>
-  <div class="legend-panel">
-    <div class="legend-panel-header">
-      <h2 class="legend-panel-title">Что такое onScore</h2>
-      <button class="legend-close-btn" id="oscoreCloseBtn" aria-label="Закрыть">✕</button>
+    <div class="legend-backdrop" id="oscoreBackdrop"></div>
+    <div class="legend-panel">
+        <div class="legend-panel-header">
+            <h2 class="legend-panel-title">Что такое onScore</h2>
+            <button class="legend-close-btn" id="oscoreCloseBtn" aria-label="Закрыть">✕</button>
+        </div>
+        <div class="legend-panel-scroll">
+            <div class="oscore-text">
+                <p><strong>onScore</strong> - это наша фирменная система взвешенного рейтинга, основанная на
+                    математической формуле доверия.</p>
+                <p><strong>Зачем она нужна?</strong><br>Обычный средний балл часто врёт. Например, если артист выпустил
+                    один гениальный сингл, его средний балл будет 950. Но если другой артист выпустил целый альбом со
+                    средним баллом 912, он заслуживает быть выше, ведь он проделал больше работы.</p>
+                <p><strong>Как это работает?</strong><br>Система onScore искусственно снижает балл артистам с малым
+                    количеством треков и повышает его для тех, у кого треков больше. Чем больше треков артиста мы
+                    оценили, тем выше его доверие, и тем ближе его итоговый балл к реальному.</p>
+                <p>Это гарантирует, что артист с одним хитом не обгонит легенду с огромной дискографией.</p>
+            </div>
+        </div>
     </div>
-    <div class="legend-panel-scroll">
-      <div class="oscore-text">
-        <p><strong>onScore</strong> - это наша фирменная система взвешенного рейтинга, основанная на математической формуле доверия.</p>
-        <p><strong>Зачем она нужна?</strong><br>Обычный средний балл часто врёт. Например, если артист выпустил один гениальный сингл, его средний балл будет 950. Но если другой артист выпустил целый альбом со средним баллом 912, он заслуживает быть выше, ведь он проделал больше работы.</p>
-        <p><strong>Как это работает?</strong><br>Система onScore искусственно снижает балл артистам с малым количеством треков и повышает его для тех, у кого треков больше. Чем больше треков артиста мы оценили, тем выше его доверие, и тем ближе его итоговый балл к реальному.</p>
-        <p>Это гарантирует, что артист с одним хитом не обгонит легенду с огромной дискографией.</p>
-      </div>
-    </div>
-  </div>
 </div>
 
 <div class="debug-panel" id="debugPanel"></div>
+<script src="js/script.js" defer></script>
 
-<script>
-  const API_URL = "https://script.google.com/macros/s/AKfycbx-eCuxFNWP3mQbrQZuxwKCvU9YFoS2YMdkNPedDm8W2GbdVN3WR-gsiczSlRW0ZmXh/exec";
-
-  const COVER_CACHE_KEY = "musicon_covers_v9";
-  const NEGATIVE_TTL_MS = 60 * 60 * 1000;
-
-  const DEBUG = new URLSearchParams(location.search).has("debug");
-  const DISCOGS_TOKEN = "ВАШ_ТОКЕН_DISCOGS";
-
-  const debugLines = [];
-  function dbg(line, isOk) {
-    if (!DEBUG) return;
-    debugLines.push(isOk === true ? `<span class="ok">✓ ${line}</span>`
-                  : isOk === false ? `<span class="fail">✗ ${line}</span>`
-                  : line);
-    const panel = document.getElementById("debugPanel");
-    if (panel) {
-      panel.classList.add("visible");
-      panel.innerHTML = debugLines.join("\n");
-    }
-    console.log("[MUSICon]", line);
-  }
-
-  if (window.Telegram?.WebApp) {
-    const tg = window.Telegram.WebApp;
-    tg.ready();
-    tg.expand();
-    try {
-      tg.setHeaderColor("#08080a");
-      tg.setBackgroundColor("#08080a");
-    } catch (e) {}
-  }
-  const haptic = (style = "light") => {
-    try { window.Telegram?.WebApp?.HapticFeedback?.impactOccurred(style); } catch (e) {}
-  };
-
-  const $  = (sel, root = document) => root.querySelector(sel);
-  const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
-
-  /* ============================================================
-     ЦВЕТА ОЦЕНОК
-     ============================================================ */
-  function getScoreColor(val) {
-    const n = Math.round(Number(val) || 0);
-    if (n >= 900) return "#00b7c4"; // 900–1000
-    if (n >= 800) return "#8B75D7"; // 800–899
-    if (n >= 600) return "#399B65"; // 600–799
-    if (n >= 400) return "#B85B25"; // 400–599
-    return "#C8323E";              // 0–399
-  }
-
-  /* ============================================================
-     НАВИГАЦИОННЫЙ СТЕК
-     ============================================================ */
-  const navStack = [];
-  let historyInited = false;
-
-  function initHistoryOnce() {
-    if (historyInited) return;
-    historyInited = true;
-    try { history.replaceState({ root: true }, ''); } catch (e) {}
-  }
-
-  function pushNav(entry) {
-    initHistoryOnce();
-    navStack.push(entry);
-    try { history.pushState({ level: navStack.length }, ''); } catch (e) {}
-    renderTopOverlay();
-    updateTelegramBackButton();
-  }
-
-  function popNav() {
-    if (navStack.length === 0) return false;
-    navStack.pop();
-    renderTopOverlay();
-    updateTelegramBackButton();
-    return true;
-  }
-
-  function goBack() {
-    if (navStack.length > 0) {
-      try { history.back(); } catch (e) { popNav(); }
-    }
-  }
-
-  function updateTelegramBackButton() {
-    const tg = window.Telegram?.WebApp;
-    if (!tg?.BackButton) return;
-    try {
-      if (navStack.length > 0) tg.BackButton.show();
-      else tg.BackButton.hide();
-    } catch (e) {}
-  }
-
-  window.addEventListener('popstate', () => {
-    if (navStack.length > 0) popNav();
-  });
-
-  if (window.Telegram?.WebApp?.BackButton) {
-    try {
-      window.Telegram.WebApp.BackButton.onClick(() => goBack());
-    } catch (e) {}
-  }
-
-  function renderTopOverlay() {
-    const artistEl = document.getElementById('artistView');
-    const releaseEl = document.getElementById('releaseView');
-    const legendEl = document.getElementById('legendModal');
-
-    if (navStack.length === 0) {
-      artistEl.classList.remove('open');
-      releaseEl.classList.remove('open');
-      legendEl.classList.remove('open');
-      legendEl.setAttribute('aria-hidden', 'true');
-      document.body.classList.remove('locked');
-      document.title = 'MUSICon';
-      return;
-    }
-
-    document.body.classList.add('locked');
-
-    let artistEntry = null;
-    let releaseEntry = null;
-    let legendOn = false;
-    let oscoreOn = false;
-    for (const e of navStack) {
-      if (e.type === 'artist') { artistEntry = e; releaseEntry = null; }
-      else if (e.type === 'release') { releaseEntry = e; artistEntry = null; }
-      else if (e.type === 'legend') { legendOn = true; }
-      else if (e.type === 'oscore') { oscoreOn = true; }
-    }
-
-    // Скрываем тот primary-view, который не на верхушке
-    if (releaseEntry) {
-      if (artistEl.classList.contains('open')) {
-        artistEl.style.transition = 'none';
-        artistEl.classList.remove('open');
-        void artistEl.offsetHeight;
-        artistEl.style.transition = '';
-      }
-    } else {
-      if (releaseEl.classList.contains('open')) {
-        releaseEl.style.transition = 'none';
-        releaseEl.classList.remove('open');
-        void releaseEl.offsetHeight;
-        releaseEl.style.transition = '';
-      }
-    }
-
-    // Показываем primary-view
-    if (releaseEntry) {
-      const rel = allReleases.find(r => r.artist === releaseEntry.artist && r.release === releaseEntry.release);
-      if (rel) {
-        renderReleaseContent(rel);
-        if (!releaseEl.classList.contains('open')) {
-          releaseEl.classList.add('open');
-        }
-        document.title = rel.release + ' · MUSICon';
-      }
-    } else if (artistEntry) {
-      renderArtistContent(artistEntry.name);
-      if (!artistEl.classList.contains('open')) {
-        artistEl.classList.add('open');
-      }
-      document.title = artistEntry.name + ' · MUSICon';
-    }
-
-    // Легенда поверх всего
-    if (legendOn) {
-      const modalContent = document.getElementById('legendModalContent');
-      if (modalContent) {
-        modalContent.querySelectorAll('.legend-rank').forEach(el => {
-          const name = el.dataset.rankName;
-          el.classList.toggle('current', currentRankName && name === currentRankName);
-        });
-      }
-      legendEl.classList.add('open');
-      legendEl.setAttribute('aria-hidden', 'false');
-    } else {
-      legendEl.classList.remove('open');
-      legendEl.setAttribute('aria-hidden', 'true');
-    }
-
-    // Модалка onScore
-    const oscoreEl = document.getElementById('oscoreModal');
-    if (oscoreEl) {
-      if (oscoreOn) {
-        oscoreEl.classList.add('open');
-        oscoreEl.setAttribute('aria-hidden', 'false');
-      } else {
-        oscoreEl.classList.remove('open');
-        oscoreEl.setAttribute('aria-hidden', 'true');
-      }
-    }
-
-  }
-
-  /* ============================================================
-     УТИЛИТЫ
-     ============================================================ */
-  function splitArtists(str) {
-    if (!str) return [];
-    return String(str).split(";").map(s => s.trim()).filter(Boolean);
-  }
-
-  function renderArtistLinks(artistStr) {
-    const list = splitArtists(artistStr);
-    if (!list.length) return escapeHtml(artistStr || "");
-    return list.map(name =>
-      `<span class="artist-link" data-artist="${escapeHtml(name)}">${escapeHtml(name)}</span>`
-    ).join('<span class="artist-sep">; </span>');
-  }
-
-  function stringHash(str) {
-    let h = 0;
-    for (let i = 0; i < str.length; i++) {
-      h = ((h << 5) - h) + str.charCodeAt(i);
-      h |= 0;
-    }
-    return Math.abs(h);
-  }
-  function artistGradient(name) {
-    const hash = stringHash(name || "?");
-    const hue1 = (hash % 40) + 345;
-    const hue2 = (hue1 + 25) % 360;
-    return `linear-gradient(135deg, hsl(${hue1}, 72%, 46%), hsl(${hue2}, 78%, 32%))`;
-  }
-  function artistGlow(name) {
-    const hash = stringHash(name || "?");
-    const hue = (hash % 35) + 345;
-    return `hsla(${hue}, 75%, 48%, .45)`;
-  }
-  function escapeHtml(str) {
-    return String(str ?? "").replace(/[&<>"']/g, ch => ({
-      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-    }[ch]));
-  }
-  function sanitizeUrl(raw) {
-    if (!raw) return null;
-    let s = String(raw).trim();
-    if (!s) return null;
-    if (!/^[a-zA-Z][a-zA-Z\d+\-.]*:\/\//.test(s)) {
-      s = "https://" + s;
-    }
-    try {
-      const u = new URL(s);
-      if (u.protocol === "http:" || u.protocol === "https:") {
-        return u.href;
-      }
-      return null;
-    } catch (e) {
-      if (/^https?:\/\//i.test(s)) return s;
-      return null;
-    }
-  }
-  function plural(n, one, few, many) {
-    const m10 = n % 10, m100 = n % 100;
-    if (m10 === 1 && m100 !== 11) return one;
-    if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return few;
-    return many;
-  }
-  const initial = (name) => (name || "?").trim().charAt(0).toUpperCase();
-
-  /* ============================================================
-     БЕЙДЖ УРОВНЯ — ЛУННЫЕ ФАЗЫ
-     ============================================================ */
-  function getTrackBadge(trackCount) {
-    const n = Number(trackCount) || 0;
-    if (n >= 50) return { emoji: "⭐", name: "Звезда" };
-    if (n >= 30) return { emoji: "🌕", name: "Полнолуние" };
-    if (n >= 20) return { emoji: "🌔", name: "Растущая луна" };
-    if (n >= 10) return { emoji: "🌓", name: "Первая четверть" };
-    if (n >= 5)  return { emoji: "🌒", name: "Молодая луна" };
-    return { emoji: "🌑", name: "Новолуние" };
-  }
-
-  function getLegendItems() {
-    return [
-      {
-        emoji: "🌑",
-        name: "Новолуние",
-        desc: "Мы только начали знакомство с артистом. Оценка основана на малом количестве треков, поэтому итоговый балл пока предварительный и может сильно измениться после новых релизов."
-      },
-      {
-        emoji: "🌒",
-        name: "Молодая луна",
-        desc: "Уже есть первое представление о стиле и качестве. Однако выборка всё ещё небольшая, и один новый удачный или провальный трек способен заметно повлиять на рейтинг."
-      },
-      {
-        emoji: "🌓",
-        name: "Первая четверть",
-        desc: "Оценка начинает стабилизироваться. Мы послушали достаточно треков, чтобы составить объективное мнение, но потенциал для изменения всё еще есть."
-      },
-      {
-        emoji: "🌔",
-        name: "Растущая луна",
-        desc: "Картина почти ясна. У нас солидная выборка, и случайные треки уже не играют большой роли. Оценка хорошо отражает реальный уровень артиста по нашей шкале."
-      },
-      {
-        emoji: "🌕",
-        name: "Полнолуние",
-        desc: "Мы видим артиста целиком. Оценка проверена большим количеством прослушанного материала. Повлиять на этот балл случайным синглом или филлером уже невозможно."
-      },
-      {
-        emoji: "⭐",
-        name: "Звезда",
-        desc: "Максимальная степень изученности. Мы знаем творчество этого артиста вдоль и поперек. Оценка железобетонная, максимально точная и не подлежит сомнению."
-      }
-    ];
-  }
-
-  function renderLegendItemsHTML() {
-    return getLegendItems().map(item => `
-      <div class="legend-rank" data-rank-name="${escapeHtml(item.name)}">
-        <div class="legend-rank-header">
-          <span class="legend-rank-emoji">${item.emoji}</span>
-          <span class="legend-rank-name">${item.name}</span>
-        </div>
-        <p class="legend-rank-desc">${escapeHtml(item.desc)}</p>
-      </div>
-    `).join("");
-  }
-
-  function renderLegend() {
-    const card = $("#legendCard");
-    const modal = $("#legendModalContent");
-    const html = renderLegendItemsHTML();
-    if (card) card.innerHTML = html;
-    if (modal) modal.innerHTML = html;
-  }
-
-  /* ============================================================
-     ФОРМАТ ДАТЫ
-     ============================================================ */
-  function formatDateRu(isoDate) {
-    if (!isoDate) return "";
-    const s = String(isoDate).trim();
-    if (!s) return "";
-
-    const months = [
-      "января", "февраля", "марта", "апреля", "мая", "июня",
-      "июля", "августа", "сентября", "октября", "ноября", "декабря"
-    ];
-
-    let m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-    if (m) {
-      const y = m[1], mo = parseInt(m[2], 10), d = parseInt(m[3], 10);
-      if (mo >= 1 && mo <= 12 && d >= 1 && d <= 31) return `${d} ${months[mo - 1]} ${y}`;
-    }
-
-    m = s.match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})$/);
-    if (m) {
-      const d = parseInt(m[1], 10), mo = parseInt(m[2], 10), y = m[3];
-      if (mo >= 1 && mo <= 12 && d >= 1 && d <= 31) return `${d} ${months[mo - 1]} ${y}`;
-    }
-
-    const dt = new Date(s);
-    if (!isNaN(dt.getTime())) {
-      return `${dt.getDate()} ${months[dt.getMonth()]} ${dt.getFullYear()}`;
-    }
-    return s;
-  }
-
-  /* ============================================================
-     ОБЛОЖКИ
-     ============================================================ */
-  function clean(s) {
-    return String(s || "")
-      .toLowerCase()
-      .replace(/\([^)]*\)/g, " ")
-      .replace(/\[[^\]]*\]/g, " ")
-      .replace(/[\.,\/#!$%\^&\*;:{}=\-_`~()]/g, " ")
-      .replace(/\s+/g, " ")
-      .trim();
-  }
-  function wordOverlap(a, b) {
-    const wa = new Set(clean(a).split(" ").filter(w => w.length > 1));
-    const wb = new Set(clean(b).split(" ").filter(w => w.length > 1));
-    if (!wa.size || !wb.size) return 0;
-    let common = 0;
-    for (const w of wa) if (wb.has(w)) common++;
-    return common / Math.min(wa.size, wb.size);
-  }
-  function artistMatches(targetArtist, candidateArtist) {
-    const targetClean = clean(targetArtist);
-    const candClean   = clean(candidateArtist);
-    if (!targetClean || !candClean) return false;
-    if (targetClean === candClean) return true;
-    if (targetClean.includes(candClean) || candClean.includes(targetClean)) return true;
-    if (wordOverlap(targetClean, candClean) >= 0.5) return true;
-    return false;
-  }
-
-  let coverCache = {};
-  try { coverCache = JSON.parse(localStorage.getItem(COVER_CACHE_KEY) || "{}"); }
-  catch (e) { coverCache = {}; }
-
-  function saveCache() {
-    try { localStorage.setItem(COVER_CACHE_KEY, JSON.stringify(coverCache)); } catch (e) {}
-  }
-  function makeKey(artist, album) {
-    return `${String(artist || "").trim().toLowerCase()}:::${String(album || "").trim().toLowerCase()}`;
-  }
-  function getCached(artist, album) {
-    const key = makeKey(artist, album);
-    const rec = coverCache[key];
-    if (!rec) return undefined;
-    if (typeof rec === "string") return rec;
-    if (rec.url) return rec.url;
-    if (rec.failedAt && (Date.now() - rec.failedAt < NEGATIVE_TTL_MS)) return null;
-    return undefined;
-  }
-  function setCached(artist, album, url) {
-    const key = makeKey(artist, album);
-    if (url) coverCache[key] = { url, ts: Date.now() };
-    else coverCache[key] = { failedAt: Date.now() };
-    saveCache();
-  }
-
-  async function searchDiscogs(artist, album) {
-    if (!DISCOGS_TOKEN || DISCOGS_TOKEN === "ВАШ_ТОКЕН_DISCOGS") return null;
-    const query = `${artist} - ${album}`.trim();
-    const url = `https://api.discogs.com/database/search?q=${encodeURIComponent(query)}&type=release&per_page=3&token=${DISCOGS_TOKEN}`;
-    try {
-      const res = await fetch(url, { headers: { "User-Agent": "MUSIConApp/0.5 (+https://t.me)" } });
-      if (!res.ok) return null;
-      const data = await res.json();
-      const results = data.results || [];
-      if (!results.length) return null;
-      for (const item of results) {
-        const itemTitle = item.title || "";
-        const parts = itemTitle.split(" - ");
-        const candArtist = parts[0] || "";
-        const candAlbum  = parts.slice(1).join(" - ") || itemTitle;
-        const aOk = artistMatches(artist, candArtist);
-        const tOk = wordOverlap(album, candAlbum) >= 0.4 || clean(candAlbum).includes(clean(album));
-        if (aOk && tOk && item.cover_image && !item.cover_image.endsWith("spacer.gif")) {
-          return item.cover_image;
-        }
-      }
-      return null;
-    } catch (e) { return null; }
-  }
-
-  async function searchItunes(term, expectedArtist, expectedTitle) {
-    const url = `https://itunes.apple.com/search?term=${encodeURIComponent(term)}&entity=album&limit=5`;
-    try {
-      const res = await fetch(url);
-      if (!res.ok) return null;
-      const data = await res.json();
-      const results = data.results || [];
-      if (!results.length) return null;
-      for (const item of results) {
-        if (!artistMatches(expectedArtist, item.artistName)) continue;
-        const albumClean = clean(expectedTitle);
-        const candClean  = clean(item.collectionName);
-        if (candClean.includes(albumClean) || albumClean.includes(candClean) || wordOverlap(albumClean, candClean) >= 0.4) {
-          const raw = item.artworkUrl100 || item.artworkUrl60;
-          if (raw) return raw.replace(/100x100bb|60x60bb/, "600x600bb");
-        }
-      }
-      return null;
-    } catch (e) { return null; }
-  }
-
-  async function fetchCover(artist, album) {
-    return null;
-    const cached = getCached(artist, album);
-    if (cached !== undefined) return cached;
-    let cover = await searchDiscogs(artist, album);
-    if (!cover) cover = await searchItunes(`${artist} ${album}`, artist, album);
-    if (!cover) cover = await searchItunes(album, artist, album);
-    setCached(artist, album, cover);
-    return cover;
-  }
-
-  function coverHTML({ artist, album, explicitUrl, sizeClass = "small" }) {
-    const init = escapeHtml(initial(artist));
-    const bg   = artistGradient(artist);
-
-    if (explicitUrl) {
-      return `
-        <div class="cover ${sizeClass}" style="background:${bg}">
-          <span class="cover-initial">${init}</span>
-          <img src="${escapeHtml(explicitUrl)}" alt="" loading="lazy"
-               onload="this.previousElementSibling.style.display='none'"
-               onerror="this.remove()">
-        </div>
-      `;
-    }
-
-    const cached = getCached(artist, album);
-    if (cached) {
-      return `
-        <div class="cover ${sizeClass}" style="background:${bg}">
-          <span class="cover-initial">${init}</span>
-          <img src="${escapeHtml(cached)}" alt="" loading="lazy"
-               onload="this.previousElementSibling.style.display='none'"
-               onerror="this.remove()">
-        </div>
-      `;
-    }
-
-    return `
-      <div class="cover ${sizeClass} cover-placeholder" style="background:${bg}"
-           data-artist="${escapeHtml(artist)}"
-           data-album="${escapeHtml(album)}">
-        <span class="cover-initial">${init}</span>
-      </div>
-    `;
-  }
-
-  async function hydrateCovers(container) {
-    const placeholders = $$(".cover-placeholder", container);
-    if (!placeholders.length) return;
-    for (const ph of placeholders) {
-      const art = ph.getAttribute("data-artist");
-      const alb = ph.getAttribute("data-album");
-      if (!art || !alb) continue;
-      fetchCover(art, alb).then(url => {
-        if (!url || !ph.isConnected) return;
-        const img = document.createElement("img");
-        img.loading = "lazy";
-        img.alt = "";
-        img.onload = () => {
-          const initSpan = ph.querySelector(".cover-initial");
-          if (initSpan) initSpan.style.display = "none";
-          ph.classList.remove("cover-placeholder");
-        };
-        img.onerror = () => img.remove();
-        img.src = url;
-        ph.appendChild(img);
-      });
-    }
-  }
-
-  /* ============================================================
-     СОСТОЯНИЕ
-     ============================================================ */
-  let allReleases = [];
-  let globalArtistImages = {};
-  let globalArtistLinks = {};
-  let currentRankName = null;
-  const artistMap = new Map();
-
-  function buildArtistMap() {
-    artistMap.clear();
-    for (const r of allReleases) {
-      const artists = splitArtists(r.artist);
-      if (!artists.length && r.artist) artists.push(r.artist);
-      for (const name of artists) {
-        if (!artistMap.has(name)) {
-          const img = globalArtistImages[name] || globalArtistImages[name.trim()] || "";
-          const explicitLinks = globalArtistLinks[name] || globalArtistLinks[name.trim()] || {};
-          artistMap.set(name, {
-            name,
-            releases: [],
-            imageUrl: typeof img === "string" ? img : (img.imageUrl || ""),
-            yandex_url: explicitLinks.yandex_url || "",
-            spotify_url: explicitLinks.spotify_url || ""
-          });
-        }
-        const entry = artistMap.get(name);
-        if (!entry.releases.includes(r)) entry.releases.push(r);
-      }
-    }
-    for (const entry of artistMap.values()) {
-      entry.releases.sort((a, b) => b.avg1000 - a.avg1000);
-
-      // Если ссылки на артиста не заданы на вкладке artist, проверяем строки релизов
-      if (!entry.yandex_url) {
-        for (const r of entry.releases) {
-          if (r.artist_url_yandex) {
-            entry.yandex_url = r.artist_url_yandex;
-            break;
-          }
-        }
-      }
-      if (!entry.spotify_url) {
-        for (const r of entry.releases) {
-          if (r.artist_url_spotify) {
-            entry.spotify_url = r.artist_url_spotify;
-            break;
-          }
-        }
-      }
-    }
-  }
-
-  function calculateArtistStats(entry) {
-    const releases = entry.releases;
-    let totalPoints = 0;
-    let totalTracks = 0;
-    for (const r of releases) {
-      const tracks = Math.max(1, Number(r.track_count) || (
-        /сингл|single/i.test(r.type) ? 1 :
-        /ep|мини/i.test(r.type) ? 4 :
-        /альбом|album|lp/i.test(r.type) ? 10 : 1
-      ));
-      totalPoints += (r.avg1000 * tracks);
-      totalTracks += tracks;
-    }
-    const rawAvg = totalTracks > 0 ? (totalPoints / totalTracks) : 0;
-    const GLOBAL_AVERAGE = 700;
-    const MIN_TRACKS = 10;
-    const weightedAvg = (totalPoints + (GLOBAL_AVERAGE * MIN_TRACKS)) / (totalTracks + MIN_TRACKS);
-    const bestScore = releases.length ? Math.max(...releases.map(r => r.avg1000)) : 0;
-    return { count: releases.length, totalTracks, rawAvg, weightedAvg, bestScore };
-  }
-
-  /* ============================================================
-     РЕНДЕР: ГЛАВНАЯ
-     ============================================================ */
-  function renderLatest(r) {
-    const c = $("#latestContainer");
-    if (!r) {
-      c.innerHTML = `<div class="status">Релизы не найдены</div>`;
-      return;
-    }
-    const trackLabel = r.track_count ? ` · ${r.track_count} ${plural(r.track_count, "трек", "трека", "треков")}` : "";
-    const dateLabel = r.date ? "оценено " + formatDateRu(r.date) : "Недавно";
-    const scoreVal = Math.round(r.avg1000);
-    const scoreCol = getScoreColor(scoreVal);
-
-    c.innerHTML = `
-      <div class="latest-card"
-           data-release-artist="${escapeHtml(r.artist)}"
-           data-release-name="${escapeHtml(r.release)}">
-        <div class="latest-top">
-          <span class="pill">Свежая оценка</span>
-          <span class="latest-date">${escapeHtml(dateLabel)}</span>
-        </div>
-        <div class="latest-body">
-          ${coverHTML({ artist: r.artist, album: r.release, explicitUrl: r.cover_url, sizeClass: "large" })}
-          <div class="latest-info">
-            <div class="latest-title" title="${escapeHtml(r.release)}">${escapeHtml(r.release)}</div>
-            <div class="latest-artist">${renderArtistLinks(r.artist)}</div>
-            <div class="latest-meta">${escapeHtml(r.type || "Релиз")}${trackLabel}</div>
-          </div>
-          <div class="latest-score-box">
-            <div class="score" style="color:${scoreCol};filter:drop-shadow(0 2px 10px ${scoreCol}55);">${scoreVal}</div>
-            <div class="score-label">Балл</div>
-          </div>
-        </div>
-      </div>
-    `;
-    hydrateCovers(c);
-  }
-
-  function renderReleases() {
-    const list = $("#releaseList");
-    const count = $("#allCount");
-    count.textContent = `(${allReleases.length})`;
-
-    list.innerHTML = allReleases.map(r => {
-      const trackLabel = r.track_count ? ` · ${r.track_count} ${plural(r.track_count, "трек", "трека", "треков")}` : "";
-      const scoreVal = Math.round(r.avg1000);
-      const scoreCol = getScoreColor(scoreVal);
-      return `
-      <li class="release-item"
-          data-release-artist="${escapeHtml(r.artist)}"
-          data-release-name="${escapeHtml(r.release)}">
-        ${coverHTML({ artist: r.artist, album: r.release, explicitUrl: r.cover_url, sizeClass: "small" })}
-        <div class="item-info">
-          <div class="item-title">${escapeHtml(r.release)}</div>
-          <div class="item-artist">
-            ${renderArtistLinks(r.artist)}
-            · ${escapeHtml(r.type || "")}${trackLabel}
-          </div>
-        </div>
-        <div class="item-score" style="color:${scoreCol};">${scoreVal}</div>
-      </li>
-    `}).join("");
-    hydrateCovers(list);
-  }
-
-  function renderArtists() {
-    const card = $("#artistsCard");
-    if (!artistMap.size) {
-      card.innerHTML = `<div class="status">Нет данных для топа</div>`;
-      return;
-    }
-
-    const artists = [...artistMap.values()]
-      .map(a => {
-        const stats = calculateArtistStats(a);
-        return {
-          name: a.name,
-          avg: stats.weightedAvg,
-          count: stats.count,
-          totalTracks: stats.totalTracks,
-          imageUrl: a.imageUrl
-        };
-      })
-      .sort((a, b) => b.avg - a.avg)
-      .slice(0, 5);
-
-    card.innerHTML = artists.map((a, i) => {
-      const bg = artistGradient(a.name);
-      const init = escapeHtml(initial(a.name));
-      const rankNum = i + 1;
-      const imgHTML = a.imageUrl
-        ? `<img src="${escapeHtml(a.imageUrl)}" alt="" onerror="this.remove()">`
-        : "";
-      const badge = getTrackBadge(a.totalTracks);
-      const scoreVal = Math.round(a.avg);
-      const scoreCol = getScoreColor(scoreVal);
-      return `
-        <div class="artist-row rank-${rankNum}" data-artist="${escapeHtml(a.name)}">
-          <span class="rank">${rankNum}</span>
-          <div class="avatar-wrap">
-            <div class="avatar" style="background:${bg}">
-              <span class="cover-initial">${init}</span>
-              ${imgHTML}
-            </div>
-            <div class="avatar-badge" title="${badge.name}">${badge.emoji}</div>
-          </div>
-          <div class="artist-info">
-            <div class="artist-name">${escapeHtml(a.name)}</div>
-            <div class="artist-sub">${a.count} ${plural(a.count, "релиз", "релиза", "релизов")} · ${a.totalTracks} ${plural(a.totalTracks, "трек", "трека", "треков")}</div>
-          </div>
-          <div class="artist-score" style="color:${scoreCol};">${scoreVal}</div>
-        </div>
-      `;
-    }).join("");
-  }
-
-  /* ============================================================
-     РЕНДЕР: ЭКРАН АРТИСТА
-     ============================================================ */
-  function renderArtistContent(name) {
-    const entry = artistMap.get(name);
-    if (!entry) return;
-
-    const content = $("#artistViewContent");
-    const releases = entry.releases;
-    const stats = calculateArtistStats(entry);
-    const view = $("#artistView");
-    view.style.setProperty("--artist-glow", artistGlow(name));
-
-    const bg = artistGradient(name);
-    const init = escapeHtml(initial(name));
-    const avatarImg = entry.imageUrl
-      ? `<img src="${escapeHtml(entry.imageUrl)}" alt="" onerror="this.remove()">`
-      : "";
-    const badge = getTrackBadge(stats.totalTracks);
-
-    // Ссылки на артиста в Яндекс Музыке и Spotify (по форме как на релизах)
-    const yandexArtistLink = sanitizeUrl(entry.yandex_url);
-    const spotifyArtistLink = sanitizeUrl(entry.spotify_url);
-    const yandexBtn = yandexArtistLink
-      ? `<a class="release-link-btn" href="${escapeHtml(yandexArtistLink)}" target="_blank" rel="noopener noreferrer"><span class="release-link-text">Артист на Яндекс Музыке</span><span class="release-link-arrow">↗</span></a>`
-      : "";
-    const spotifyBtn = spotifyArtistLink
-      ? `<a class="release-link-btn" href="${escapeHtml(spotifyArtistLink)}" target="_blank" rel="noopener noreferrer"><span class="release-link-text">Артист на Spotify</span><span class="release-link-arrow">↗</span></a>`
-      : "";
-    const artistLinksHTML = (yandexBtn || spotifyBtn)
-      ? `<div class="artist-links">${yandexBtn}${spotifyBtn}</div>`
-      : "";
-
-    const onScoreVal = Math.round(stats.weightedAvg);
-    const onScoreCol = getScoreColor(onScoreVal);
-    const bestScoreVal = Math.round(stats.bestScore);
-    const bestScoreCol = getScoreColor(bestScoreVal);
-
-    const internalTop = releases.map((r, i) => {
-      const trackLabel = r.track_count ? ` · ${r.track_count} ${plural(r.track_count, "трек", "трека", "треков")}` : "";
-      const dateLabel = r.date ? " · " + formatDateRu(r.date) : "";
-      const scoreVal = Math.round(r.avg1000);
-      const scoreCol = getScoreColor(scoreVal);
-      return `
-      <div class="internal-top-item"
-           data-release-artist="${escapeHtml(r.artist)}"
-           data-release-name="${escapeHtml(r.release)}">
-        <span class="rank">${i + 1}</span>
-        ${coverHTML({ artist: r.artist, album: r.release, explicitUrl: r.cover_url, sizeClass: "small" })}
-        <div class="item-info">
-          <div class="item-title">${escapeHtml(r.release)}</div>
-          <div class="item-artist">${escapeHtml(r.type || "")}${trackLabel}${dateLabel}</div>
-        </div>
-        <div class="item-score" style="color:${scoreCol};">${scoreVal}</div>
-      </div>
-    `}).join("");
-
-    content.innerHTML = `
-      <div class="artist-hero">
-        <div class="avatar-wrap">
-          <div class="avatar" style="background:${bg}">
-            <span class="cover-initial">${init}</span>
-            ${avatarImg}
-          </div>
-          <div class="avatar-badge" title="${badge.name}">${badge.emoji}</div>
-        </div>
-        <h1 class="artist-hero-name">${escapeHtml(name)}</h1>
-        <div class="artist-hero-stats">
-          <span class="stat-chip rank-chip" data-rank-name="${escapeHtml(badge.name)}">${badge.emoji} ${badge.name}</span>
-          <span class="stat-chip"><strong>${stats.count}</strong> ${plural(stats.count, "релиз", "релиза", "релизов")}</span>
-          <span class="stat-chip"><strong>${stats.totalTracks}</strong> ${plural(stats.totalTracks, "трек", "трека", "треков")}</span>
-          <span class="stat-chip oscore-chip">балл onScore: <strong style="color:${onScoreCol};">${onScoreVal}</strong><span class="info-icon">?</span></span>
-          <span class="stat-chip">Лучший релиз: <strong style="color:${bestScoreCol};">${bestScoreVal}</strong></span>
-        </div>
-        ${artistLinksHTML}
-      </div>
-
-      <div class="internal-top-title">Все релизы артиста (по баллам)</div>
-      <div class="internal-top">
-        ${internalTop}
-      </div>
-    `;
-
-    hydrateCovers(content);
-  }
-
-  /* ============================================================
-     РЕНДЕР: ЭКРАН РЕЛИЗА
-     ============================================================ */
-  function renderReleaseContent(r) {
-    const content = $("#releaseViewContent");
-
-    const trackLabel = r.track_count ? `${r.track_count} ${plural(r.track_count, "трек", "трека", "треков")}` : "";
-    const typeLine = [r.type, trackLabel].filter(Boolean).join(" · ");
-
-    const yandexRelLink = sanitizeUrl(r.relise_url_yandex || r.release_url_yandex);
-    const spotifyRelLink = sanitizeUrl(r.relise_url_spotiify || r.release_url_spotify || r.relise_url_spotify);
-    const yandexRelBtn = yandexRelLink
-      ? `<a class="release-link-btn" href="${escapeHtml(yandexRelLink)}" target="_blank" rel="noopener noreferrer"><span class="release-link-text">Релиз на Яндекс Музыке</span><span class="release-link-arrow">↗</span></a>`
-      : "";
-    const spotifyRelBtn = spotifyRelLink
-      ? `<a class="release-link-btn" href="${escapeHtml(spotifyRelLink)}" target="_blank" rel="noopener noreferrer"><span class="release-link-text">Релиз на Spotify</span><span class="release-link-arrow">↗</span></a>`
-      : "";
-    const releaseLinksHTML = (yandexRelBtn || spotifyRelBtn)
-      ? `<div class="release-links">${yandexRelBtn}${spotifyRelBtn}</div>`
-      : "";
-
-    const releaseDateHTML = r.release_date
-      ? `<div class="release-date-item"><span class="release-date-label">Дата выхода</span><span class="release-date-value">${escapeHtml(formatDateRu(r.release_date))}</span></div>`
-      : "";
-    const assessDateHTML = r.date
-      ? `<div class="release-date-item"><span class="release-date-label">Оценено</span><span class="release-date-value">${escapeHtml(formatDateRu(r.date))}</span></div>`
-      : "";
-    const datesHTML = (releaseDateHTML || assessDateHTML)
-      ? `<div class="release-dates">${releaseDateHTML}${assessDateHTML}</div>`
-      : "";
-
-    const descHTML = r.description
-      ? `<div class="release-description">${escapeHtml(r.description)}</div>`
-      : "";
-
-    const tracks = Array.isArray(r.tracks) ? r.tracks : [];
-    let tracklistHTML;
-    if (!tracks.length) {
-      tracklistHTML = `<div class="status">Треклист пока не заполнен</div>`;
-    } else {
-      tracklistHTML = tracks.map(t => {
-        const dur = t.duration ? `<span class="release-track-duration">${escapeHtml(t.duration)}</span>` : "";
-        const tScoreVal = Math.round(t.avg1000);
-        const tScoreCol = getScoreColor(tScoreVal);
-        return `
-          <div class="release-track">
-            <span class="release-track-num">${t.track_number}</span>
-            <div class="release-track-info">
-              <div class="release-track-name">${escapeHtml(t.song_name || "")}</div>
-              ${dur}
-            </div>
-            <div class="release-track-score" style="color:${tScoreCol};">${tScoreVal}</div>
-          </div>
-        `;
-      }).join("");
-    }
-
-    const relScoreVal = Math.round(r.avg1000);
-    const relScoreCol = getScoreColor(relScoreVal);
-
-    content.innerHTML = `
-      <div class="release-hero">
-        <div class="release-hero-cover">
-          ${coverHTML({ artist: r.artist, album: r.release, explicitUrl: r.cover_url, sizeClass: "xl" })}
-        </div>
-        <div class="release-hero-info">
-          <h1 class="release-hero-title">${escapeHtml(r.release)}</h1>
-          <div class="release-hero-artists">${renderArtistLinks(r.artist)}</div>
-          ${typeLine ? `<div class="release-hero-type">${escapeHtml(typeLine)}</div>` : ""}
-        </div>
-        <div class="release-hero-score">
-          <div class="release-hero-score-num" style="color:${relScoreCol};filter:drop-shadow(0 2px 10px ${relScoreCol}55);">${relScoreVal}</div>
-          <div class="release-hero-score-label">Балл</div>
-        </div>
-      </div>
-      ${releaseLinksHTML}
-      ${datesHTML}
-      ${descHTML}
-      <div class="release-tracklist-title">Содержимое релиза</div>
-      <div class="release-tracklist">${tracklistHTML}</div>
-    `;
-
-    hydrateCovers(content);
-  }
-
-  /* ============================================================
-     ОТКРЫТИЕ ЭКРАНОВ
-     ============================================================ */
-  function openArtist(name) {
-    if (!artistMap.has(name)) return;
-    const top = navStack[navStack.length - 1];
-    if (top && top.type === 'artist' && top.name === name) return;
-    haptic("light");
-    pushNav({ type: 'artist', name });
-  }
-
-  function openRelease(artistName, releaseName) {
-    const rel = allReleases.find(r => r.artist === artistName && r.release === releaseName);
-    if (!rel) return;
-    const top = navStack[navStack.length - 1];
-    if (top && top.type === 'release' && top.artist === artistName && top.release === releaseName) return;
-    haptic("light");
-    pushNav({ type: 'release', artist: artistName, release: releaseName });
-  }
-
-  function openLegend(rankName = null) {
-    const top = navStack[navStack.length - 1];
-    if (top && top.type === 'legend') return;
-    currentRankName = rankName;
-    haptic("light");
-    pushNav({ type: 'legend' });
-  }
-
-  function openOscore() {
-    const top = navStack[navStack.length - 1];
-    if (top && top.type === 'oscore') return;
-    haptic("light");
-    pushNav({ type: 'oscore' });
-  }
-
-  /* ============================================================
-     ОБРАБОТЧИКИ
-     ============================================================ */
-  document.addEventListener("click", e => {
-    // Клик по плашке уровня в профиле артиста — открываем легенду
-    const rankChip = e.target.closest(".stat-chip.rank-chip");
-    if (rankChip) {
-      e.preventDefault();
-      e.stopPropagation();
-      const name = rankChip.dataset.rankName;
-      openLegend(name || null);
-      return;
-    }
-
-    const oscoreChip = e.target.closest(".stat-chip.oscore-chip");
-    if (oscoreChip) {
-      e.preventDefault();
-      e.stopPropagation();
-      openOscore();
-      return;
-    }
-
-    const link = e.target.closest(".artist-link");
-    if (link) {
-      e.stopPropagation();
-      e.preventDefault();
-      const artist = link.getAttribute("data-artist");
-      if (artist) openArtist(artist);
-      return;
-    }
-
-    const row = e.target.closest(".artist-row");
-    if (row && row.dataset.artist) {
-      e.preventDefault();
-      openArtist(row.dataset.artist);
-      return;
-    }
-
-    const releaseEl = e.target.closest("[data-release-name]");
-    if (releaseEl) {
-      e.preventDefault();
-      const a = releaseEl.dataset.releaseArtist;
-      const r = releaseEl.dataset.releaseName;
-      if (a && r) openRelease(a, r);
-      return;
-    }
-  });
-
-  $("#backBtn").addEventListener("click", goBack);
-  $("#releaseBackBtn").addEventListener("click", goBack);
-  $("#legendCloseBtn").addEventListener("click", goBack);
-  $("#legendBackdrop").addEventListener("click", goBack);
-  $("#oscoreCloseBtn").addEventListener("click", goBack);
-  $("#oscoreBackdrop").addEventListener("click", goBack);
-
-  const accBtn = $("#accBtn");
-  const accContent = $("#accContent");
-  accBtn.addEventListener("click", () => {
-    const open = accContent.classList.toggle("open");
-    accBtn.setAttribute("aria-expanded", String(open));
-    haptic("selection_change");
-  });
-
-  const legendAccBtn = $("#legendAccBtn");
-  const legendAccContent = $("#legendAccContent");
-  legendAccBtn.addEventListener("click", () => {
-    const open = legendAccContent.classList.toggle("open");
-    legendAccBtn.setAttribute("aria-expanded", String(open));
-    haptic("selection_change");
-  });
-
-  /* ============================================================
-     ЗАГРУЗКА
-     ============================================================ */
-  async function loadData() {
-    try {
-      const res = await fetch(API_URL, { cache: "no-cache" });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-
-      let rawReleases = [];
-      if (Array.isArray(data)) {
-        rawReleases = data;
-        globalArtistImages = {};
-        globalArtistLinks = {};
-      } else {
-        rawReleases = data.releases || [];
-        globalArtistImages = data.artists || {};
-        globalArtistLinks = data.artist_links || {};
-      }
-
-      allReleases = rawReleases.map(r => ({
-        artist: r.artist || "",
-        release: r.release || "",
-        type: r.type || "",
-        track_count: Math.max(1, Number(r.track_count) || 1),
-        system: r.system || "",
-        cover_url: r.cover_url || "",
-        date: r.date || "",
-        release_date: r.release_date || "",
-        description: r.description || "",
-        relise_url_yandex: r.relise_url_yandex || r.release_url_yandex || "",
-        relise_url_spotiify: r.relise_url_spotiify || r.release_url_spotify || r.relise_url_spotify || "",
-        artist_url_yandex: r.artist_url_yandex || "",
-        artist_url_spotify: r.artist_url_spotify || "",
-        tracks: Array.isArray(r.tracks) ? r.tracks : [],
-        avg: Number(r.avg) || 0,
-        avg1000: Number(r.avg1000) || 0
-      })).filter(r => r.release && r.artist);
-
-      buildArtistMap();
-      renderLegend();
-
-      if (allReleases.length) renderLatest(allReleases[0]);
-      else renderLatest(null);
-
-      renderArtists();
-      renderReleases();
-    } catch (err) {
-      console.error(err);
-      $("#latestContainer").innerHTML = `
-        <div class="error-block">
-          Не удалось загрузить данные из таблицы.<br>
-          <small style="opacity:.8">${escapeHtml(err.message)}</small>
-        </div>
-      `;
-      $("#artistsCard").innerHTML = `<div class="status">Ошибка загрузки данных</div>`;
-    }
-  }
-
-  renderLegend();
-  loadData();
-</script>
 </body>
 </html>
