@@ -59,78 +59,80 @@ function initHistoryOnce() {
   try { history.replaceState({ root: true }, ''); } catch (e) {}
 }
 
-function pushNav(entry) {
-  initHistoryOnce();
-  navStack.push(entry);
-  try { history.pushState({ level: navStack.length }, ''); } catch (e) {}
+  function pushNav(entry) {
+    initHistoryOnce();
+    navStack.push(entry);
+    try { history.pushState({ stack: navStack.map(e => ({...e})) }, ''); } catch (e) {}
+    renderTopOverlay();
+    updateTelegramBackButton();
+  }
+
+  function popNav() {
+    if (navStack.length === 0) return false;
+    applyPopFromHistory(navStack.slice(0, -1));
+    return true;
+  }
+
+  function applyPopFromHistory(targetStack) {
+    if (navStack.length === 0) {
+      navStack.length = 0;
+      navStack.push(...targetStack);
+      renderTopOverlay();
+      updateTelegramBackButton();
+      return;
+    }
+
+    const artistEl = document.getElementById('artistView');
+    const releaseEl = document.getElementById('releaseView');
+
+    // Кто сейчас сверху — artist или release?
+    let topEl = null;
+    const aOpen = artistEl.classList.contains('open');
+    const rOpen = releaseEl.classList.contains('open');
+    if (aOpen && rOpen) {
+      const az = parseInt(artistEl.style.zIndex) || 100;
+      const rz = parseInt(releaseEl.style.zIndex) || 110;
+      topEl = az > rz ? artistEl : releaseEl;
+    } else if (aOpen) topEl = artistEl;
+    else if (rOpen) topEl = releaseEl;
+
+    // Снимок верхнего экрана — уезжает вниз, пока под ним уже стоит предыдущий слой
+    let snapshot = null;
+    if (topEl) {
+      snapshot = topEl.cloneNode(true);
+      snapshot.removeAttribute('id');
+      snapshot.querySelectorAll('[id]').forEach(n => n.removeAttribute('id'));
+      Object.assign(snapshot.style, {
+        position: 'fixed', inset: '0', zIndex: '9999',
+        pointerEvents: 'none', margin: '0',
+        transition: 'none', transform: 'translateY(0)', opacity: '1'
+      });
+      const origScroll = topEl.querySelector('.artist-view-scroll, .release-view-scroll');
+      const cloneScroll = snapshot.querySelector('.artist-view-scroll, .release-view-scroll');
+      if (origScroll && cloneScroll) cloneScroll.scrollTop = origScroll.scrollTop;
+      document.body.appendChild(snapshot);
+    }
+
+    navStack.length = 0;
+    navStack.push(...targetStack);
+
+isPopping = true;
+try {
   renderTopOverlay();
-  updateTelegramBackButton();
+} finally {
+  isPopping = false;
 }
 
-    function popNav() {
-      if (navStack.length === 0) return false;
-
-      const artistEl = document.getElementById('artistView');
-      const releaseEl = document.getElementById('releaseView');
-
-      // Кто сейчас сверху — artist или release?
-      let topEl = null;
-      const aOpen = artistEl.classList.contains('open');
-      const rOpen = releaseEl.classList.contains('open');
-      if (aOpen && rOpen) {
-        const az = parseInt(artistEl.style.zIndex) || 100;
-        const rz = parseInt(releaseEl.style.zIndex) || 110;
-        topEl = az > rz ? artistEl : releaseEl;
-      } else if (aOpen) {
-        topEl = artistEl;
-      } else if (rOpen) {
-        topEl = releaseEl;
-      }
-
-      // Снимок верхнего экрана — он будет уезжать вниз,
-      // пока оригиналы уже обновятся на предыдущий уровень
-      let snapshot = null;
-      if (topEl) {
-        snapshot = topEl.cloneNode(true);
-        snapshot.removeAttribute('id');
-        snapshot.querySelectorAll('[id]').forEach(n => n.removeAttribute('id'));
-        Object.assign(snapshot.style, {
-          position: 'fixed',
-          inset: '0',
-          zIndex: '9999',
-          pointerEvents: 'none',
-          margin: '0',
-          transition: 'none',
-          transform: 'translateY(0)',
-          opacity: '1'
-        });
-
-        // Сохранить скролл — клон по умолчанию его теряет
-        const origScroll = topEl.querySelector('.artist-view-scroll, .release-view-scroll');
-        const cloneScroll = snapshot.querySelector('.artist-view-scroll, .release-view-scroll');
-        if (origScroll && cloneScroll) cloneScroll.scrollTop = origScroll.scrollTop;
-
-        document.body.appendChild(snapshot);
-      }
-
-      navStack.pop();
-
-      isPopping = true;
-      renderTopOverlay();
-      isPopping = false;
-
-      // Запускаем уход снимка вниз
-      if (snapshot) {
-        void snapshot.offsetWidth;
-        snapshot.style.transition = 'transform .3s cubic-bezier(.32,.72,0,1), opacity .3s';
-        snapshot.style.transform = 'translateY(100%)';
-        snapshot.style.opacity = '0';
-        setTimeout(() => snapshot.remove(), 320);
-      }
-
-      updateTelegramBackButton();
-      return true;
+    if (snapshot) {
+      void snapshot.offsetWidth;
+      snapshot.style.transition = 'transform .3s cubic-bezier(.32,.72,0,1), opacity .3s';
+      snapshot.style.transform = 'translateY(100%)';
+      snapshot.style.opacity = '0';
+      setTimeout(() => snapshot.remove(), 320);
     }
+
+    updateTelegramBackButton();
+  }
 
 function goBack() {
   if (navStack.length > 0) {
@@ -147,8 +149,26 @@ function updateTelegramBackButton() {
   } catch (e) {}
 }
 
-window.addEventListener('popstate', () => {
-  if (navStack.length > 0) popNav();
+window.addEventListener('popstate', (e) => {
+  const state = e.state;
+
+  // Старые записи (до 0.7.6) или записи из чужой истории — нет поля stack.
+  // Работаем как раньше: один шаг назад.
+  if (!state || !Array.isArray(state.stack)) {
+    if (navStack.length > 0) popNav();
+    return;
+  }
+
+  const targetStack = state.stack;
+
+  if (targetStack.length < navStack.length) {
+    applyPopFromHistory(targetStack);
+  } else if (targetStack.length > navStack.length) {
+    navStack.length = 0;
+    navStack.push(...targetStack);
+    renderTopOverlay();
+    updateTelegramBackButton();
+  }
 });
 
 if (window.Telegram?.WebApp?.BackButton) {
@@ -437,9 +457,13 @@ function artistGlow(name) {
   return `hsla(${hue}, 75%, 48%, .45)`;
 }
 function escapeHtml(str) {
-  return String(str ?? "").replace(/[&<>"']/g, ch => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-  }[ch]));
+    return String(str ?? "").replace(/[&<>"']/g, ch => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    }[ch]));
 }
 function sanitizeUrl(raw) {
   if (!raw) return null;
@@ -622,6 +646,7 @@ async function searchItunes(term, expectedArtist, expectedTitle) {
 }
 
 async function fetchCover(artist, album) {
+  return null;
   const cached = getCached(artist, album);
   if (cached !== undefined) return cached;
   let cover = await searchDiscogs(artist, album);
@@ -889,6 +914,7 @@ function openCatalogParams() {
 }
 
 function resetAllFilters() {
+  clearTimeout(searchDebounceTimer);
   catalogState = {
     search: "",
     sort: "newest",
@@ -1204,7 +1230,7 @@ function renderReleaseContent(r) {
       const tScoreCol = getScoreColor(tScoreVal);
       return `
         <div class="release-track">
-          <span class="release-track-num">${t.track_number}</span>
+          <span class="release-track-num">${escapeHtml(t.track_number ?? "")}</span>
           <div class="release-track-info">
             <div class="release-track-name">${escapeHtml(t.song_name || "")}</div>
             ${dur}
@@ -1382,6 +1408,7 @@ if (catalogSearchInput) {
 
 if (searchClearBtn) {
   searchClearBtn.addEventListener("click", () => {
+    clearTimeout(searchDebounceTimer);
     if (catalogSearchInput) {
       catalogSearchInput.value = "";
       catalogSearchInput.focus();
@@ -1447,26 +1474,67 @@ const customMinInput = document.getElementById("customScoreMin");
 const customMaxInput = document.getElementById("customScoreMax");
 const customRangeClearBtn = document.getElementById("customRangeClearBtn");
 
-function handleCustomRangeInput() {
-  const minVal = customMinInput && customMinInput.value !== "" ? Number(customMinInput.value) : null;
-  const maxVal = customMaxInput && customMaxInput.value !== "" ? Number(customMaxInput.value) : null;
-  catalogState.customScoreMin = Number.isFinite(minVal) ? minVal : null;
-  catalogState.customScoreMax = Number.isFinite(maxVal) ? maxVal : null;
-  if (customRangeClearBtn) {
-    const hasCustom = catalogState.customScoreMin !== null || catalogState.customScoreMax !== null;
-    customRangeClearBtn.style.display = hasCustom ? "flex" : "none";
-  }
-  saveCatalogStateDebounced();
-  renderCatalog();
-  const liveCounter = document.getElementById("paramsLiveCounter");
-  if (liveCounter) {
-    const filtered = getFilteredReleases();
-    liveCounter.textContent = `Найдено ${filtered.length} ${plural(filtered.length, "релиз", "релиза", "релизов")}`;
-  }
-}
+  function handleCustomRangeInput() {
+    // Получаем значения из полей
+    let minVal = customMinInput && customMinInput.value !== "" ? Number(customMinInput.value) : null;
+    let maxVal = customMaxInput && customMaxInput.value !== "" ? Number(customMaxInput.value) : null;
 
-if (customMinInput) customMinInput.addEventListener("input", handleCustomRangeInput);
-if (customMaxInput) customMaxInput.addEventListener("input", handleCustomRangeInput);
+    // Защита от "мусора" (если ввели не число)
+    if (minVal !== null && isNaN(minVal)) minVal = null;
+    if (maxVal !== null && isNaN(maxVal)) maxVal = null;
+
+    // Зажимаем в рамки 0–1000 (если ввели 2000, станет 1000)
+    if (minVal !== null) minVal = Math.max(0, Math.min(1000, minVal));
+    if (maxVal !== null) maxVal = Math.max(0, Math.min(1000, maxVal));
+
+    // Записываем в состояние (если min > max, фильтр просто выдаст 0 релизов)
+    catalogState.customScoreMin = minVal;
+    catalogState.customScoreMax = maxVal;
+
+    if (customRangeClearBtn) {
+      const hasCustom = catalogState.customScoreMin !== null || catalogState.customScoreMax !== null;
+      customRangeClearBtn.style.display = hasCustom ? "flex" : "none";
+    }
+
+    saveCatalogStateDebounced();
+    renderCatalog();
+
+    const liveCounter = document.getElementById("paramsLiveCounter");
+    if (liveCounter) {
+      const filtered = getFilteredReleases();
+      liveCounter.textContent = `Найдено ${filtered.length} ${plural(filtered.length, "релиз", "релиза", "релизов")}`;
+    }
+  }
+
+  if (customMinInput) customMinInput.addEventListener("input", handleCustomRangeInput);
+  if (customMaxInput) customMaxInput.addEventListener("input", handleCustomRangeInput);
+
+  // НОВОЕ: Наводим порядок, когда пользователь закончил ввод (кликнул вне поля)
+  function handleRangeBlur() {
+    const minVal = catalogState.customScoreMin;
+    const maxVal = catalogState.customScoreMax;
+
+    // Если оба значения есть и минимум больше максимума — меняем их местами
+    if (minVal !== null && maxVal !== null && minVal > maxVal) {
+      catalogState.customScoreMin = maxVal;
+      catalogState.customScoreMax = minVal;
+
+      if (customMinInput) customMinInput.value = String(maxVal);
+      if (customMaxInput) customMaxInput.value = String(minVal);
+
+      saveCatalogStateDebounced();
+      renderCatalog();
+
+      const liveCounter = document.getElementById("paramsLiveCounter");
+      if (liveCounter) {
+        const filtered = getFilteredReleases();
+        liveCounter.textContent = `Найдено ${filtered.length} ${plural(filtered.length, "релиз", "релиза", "релизов")}`;
+      }
+    }
+  }
+
+  if (customMinInput) customMinInput.addEventListener("change", handleRangeBlur);
+  if (customMaxInput) customMaxInput.addEventListener("change", handleRangeBlur);
 
 if (customRangeClearBtn) {
   customRangeClearBtn.addEventListener("click", () => {
